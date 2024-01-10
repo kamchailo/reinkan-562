@@ -1,10 +1,10 @@
 #define PI 3.141592
 
-vec3 EvalBrdf(vec3 N, vec3 L, vec3 V, Material mataterial)
+vec3 EvalBrdf(vec3 N, vec3 L, vec3 V, Material material)
 {
-    vec3 Kd = mataterial.diffuse;
-    vec3 Ks = mataterial.specular;
-    const float alpha = mataterial.shininess;
+    vec3 Kd = material.diffuse;
+    vec3 Ks = material.specular;
+    const float alpha = material.shininess;
 
     vec3 H = normalize(L + V);
     float LH = dot(L, H);

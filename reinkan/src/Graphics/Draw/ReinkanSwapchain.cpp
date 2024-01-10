@@ -190,6 +190,8 @@ namespace Reinkan::Graphics
         appPostDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, 2, appVLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, 3, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, 4, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, 5, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
 
     }
 
@@ -215,8 +217,16 @@ namespace Reinkan::Graphics
         {
             // Scanline ImageWrap
             appScanlineImageWrap[i].Destroy(appDevice);
+
             // ScanlinePosition ImageWrap
             appScanlinePositionImageWraps[i].Destroy(appDevice);
+
+            // ScanlineNormal ImageWrap
+            appScanlineNormalImageWraps[i].Destroy(appDevice);
+
+            // ScanlineSpecular ImageWrap
+            appScanlineSpecularImageWraps[i].Destroy(appDevice);
+
             // Scanline FrameBuffers
             vkDestroyFramebuffer(appDevice, appScanlineFrameBuffers[i], nullptr);
 
@@ -231,6 +241,8 @@ namespace Reinkan::Graphics
 
         appScanlineImageWrap.clear();
         appScanlinePositionImageWraps.clear();
+        appScanlineNormalImageWraps.clear();
+        appScanlineSpecularImageWraps.clear();
         appShadowMapImageWraps.clear();
         appVLightingRenderTargetImageWraps.clear();
     }

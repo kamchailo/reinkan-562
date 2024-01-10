@@ -95,19 +95,25 @@ namespace Reinkan::Graphics
 
         //ImGui::Text("Num of Lights: %d", appLightObjects.size());
 
-        ImGui::Checkbox("Show Default Light Shaft: ", &appImguiBool1);
+        //ImGui::Checkbox("Show Default Light Shaft: ", &appImguiBool1);
 
-        ImGui::Checkbox("Show Shadow Map: ", &appImguiBool2);
+        //ImGui::Checkbox("Show VLight Map: ", &appImguiBool3);
 
-        ImGui::Checkbox("Show VLight Map: ", &appImguiBool3);
+        ImGui::Checkbox("Show Shadow Map: ", &appImguiBool1);
 
-        ImGui::Checkbox("Show Shadow: ", &appImguiBool4);
+        ImGui::Checkbox("Color Map", &appImguiBool2);
 
-        ImGui::SliderFloat("Debug Float: ", &appDebugFloat, 10.0f, 180.0f);
+        ImGui::Checkbox("Position Map", &appImguiBool3);
 
-        ImGui::SliderFloat("Debug Float2: ", &appDebugFloat2, 0.0f, 5.0f, "%.2f");
+        ImGui::Checkbox("Normal Map", &appImguiBool4);
 
-        ImGui::SliderInt("Debug Int: ", &appDebugInt, 0, 11);
+        ImGui::Checkbox("Specular Map", &appImguiBool5);
+        
+        //ImGui::SliderFloat("Debug Float: ", &appDebugFloat, 10.0f, 180.0f);
+
+        //ImGui::SliderFloat("Debug Float2: ", &appDebugFloat2, 0.0f, 5.0f, "%.2f");
+
+        //ImGui::SliderInt("Debug Int: ", &appDebugInt, 0, 11);
 
         ImGui::End();
             
@@ -124,6 +130,9 @@ namespace Reinkan::Graphics
 
         if (appImguiBool4) { appDebugFlag = appDebugFlag | 0x8; }
         else { appDebugFlag &= INT32_MAX - 0x8; }
+
+        if (appImguiBool5) { appDebugFlag = appDebugFlag | 0x10; }
+        else { appDebugFlag &= INT32_MAX - 0x10; }
 
     }
 

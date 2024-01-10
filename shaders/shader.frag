@@ -119,7 +119,7 @@ void main()
             shadow = 1;
         }
     }
-    
+
     if((pushConstant.debugFlag & 0x8) > 0)
     {
         shadow = 1;
@@ -186,26 +186,19 @@ void main()
         }
         L = normalize(light.position - worldPos);
 
-        if((pushConstant.debugFlag & 0x4) > 1)
-        {
-            float intensity = light.intensity;
-            brdfColor += intensity * 0.2 * light.color;
-        }
-        else
-        {
-            float intensity = light.intensity * (1 - lightDistance / light.radius);
-            brdfColor += intensity * light.color * EvalBrdf(N, L, V, material);
-        }
+        float intensity = light.intensity * (1 - lightDistance / light.radius);
+        brdfColor += intensity * light.color * EvalBrdf(N, L, V, material);
+        
     }
     
     // Final Color Result
-    outColor = vec4(brdfColor, 1.0);
+    outColor = vec4(material.diffuse, 1.0);
 
     outPosition = vec4(worldPos, length(viewDir));
 
     outNormal = vec4(N, 1.0);
 
-    outSpecular = vec4(0.5, 0.5, 0.5, 1.0);
+    outSpecular = vec4(material.specular, 1.0);
 
     ////////////////////////////////////////
     //          Debug Flag

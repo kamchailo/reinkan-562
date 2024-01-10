@@ -522,6 +522,7 @@ namespace Reinkan::Graphics
         bool        appImguiBool2{ false };
         bool        appImguiBool3{ false };
         bool        appImguiBool4{ false };
+        bool        appImguiBool5{ false };
 
     ////////////////////////////////////////
     //          Compute Shaders

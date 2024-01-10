@@ -1,0 +1,35 @@
+#version 450
+
+#extension GL_EXT_nonuniform_qualifier : enable
+
+layout(binding = 0) uniform sampler2D[] textureSamplers;
+// pack all textures together (diffuse, normal, height)
+// Unpack by using Material::**texture**Id to Offset
+// vec3 height = textureSamplers[material.heightMapId];
+
+layout(binding = 1, rgba32f) uniform image3D[] pyramidalMap;
+
+struct PyramidalHeightMap
+{
+    uint heightMapId;
+    uint width;
+    uint height;
+    uint mipLevels;
+};
+layout(std140, binding = 2) readonly buffer PyramidalHeightMapBlock
+{
+    PyramidalHeightMap pyramidalHeightMaps[];
+}; 
+
+// layout (local_size_x = 16, local_size_y = 1, local_size_z = 1) in;
+// Add more local and use texture width height to calculate work loops
+
+void main()
+{
+    uint mapId = gl_WorkGroupID.x;
+    PyramidalHeightMap heightMapInfo = pyramidalHeightMaps[mapId];
+
+    float height = texture(textureSamplers[heightMapInfo.heightMapId], vec2(0.0)).x;
+    
+    imageStore(pyramidalMap[mapId], ivec3(0,0,0), vec4(vec3(height), 1.0));
+}

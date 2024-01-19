@@ -37,6 +37,7 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppMaterialPool().size());
 
             modelTr = glm::scale(modelTr, glm::vec3(0.3));
+            modelTr = glm::rotate(modelTr, 0.5f, glm::vec3(0, 1, 0));
             modelTr = glm::translate(modelTr, glm::vec3(0.0f, 2.0f, 0.0f));
 
             
@@ -67,7 +68,6 @@ namespace Reinkan::Graphics
             vulkanApp->AppendLight({ glm::vec3(0.0, 2.0, 0.0), glm::vec3(0.0,1.0,0.0), 2.0, 1.0 });
             vulkanApp->AppendLight({ glm::vec3(1.0, 2.0, 0.0), glm::vec3(0.0,1.0,0.0), 2.0, 1.0 });
             
-
             vulkanApp->BindResources();
         }
 

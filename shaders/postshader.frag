@@ -55,10 +55,11 @@ void main()
         return;
     }
     
-    // vec3 lightShaft = texture(vlightMap, uv).rgb * pushConstant.debugFloat2;
-
-    // vec3 dodgeLightShaft = colorPass.rgb * lightShaft;
-    // outColor = vec4(colorPass.rgb + dodgeLightShaft + (lightShaft * 0.3), 1);
-
     outColor = vec4(0.1,0.1,0.7,1.0);
+    
+    vec3 lightShaft = texture(vlightMap, uv).rgb * pushConstant.debugFloat2;
+
+    vec3 dodgeLightShaft = colorPass.rgb * lightShaft;
+    outColor = vec4(colorPass.rgb + dodgeLightShaft + (lightShaft * 0.3), 1);
+
 }

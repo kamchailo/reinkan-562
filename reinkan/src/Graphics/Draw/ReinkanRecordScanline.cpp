@@ -66,7 +66,7 @@ namespace Reinkan::Graphics
                 pushConstant.materialId = object.materialId;
                 pushConstant.objectId = object.objectId;
                 pushConstant.modelMatrix = object.transform;
-                pushConstant.normalMatrix = glm::transpose(glm::inverse(glm::mat3(object.transform)));
+                pushConstant.normalMatrix = glm::inverse(glm::mat3(object.transform));
                 pushConstant.debugFlag = appDebugFlag;
                 pushConstant.debugFloat = appDebugFloat;
                 pushConstant.debugFloat2 = appDebugFloat2;

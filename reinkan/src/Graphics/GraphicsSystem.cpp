@@ -68,6 +68,23 @@ namespace Reinkan::Graphics
             vulkanApp->AppendLight({ glm::vec3(0.0, 2.0, 0.0), glm::vec3(0.0,1.0,0.0), 2.0, 1.0 });
             vulkanApp->AppendLight({ glm::vec3(1.0, 2.0, 0.0), glm::vec3(0.0,1.0,0.0), 2.0, 1.0 });
             
+            // Light Meshes
+            std::vector<ModelData>  lightMeshModelDatas;
+            std::vector<Material>   lightMeshesMaterialPoolDummy;
+            std::vector<std::string>     lightMeshesTexturePoolDummy;
+
+            ReadAssimpFile("../assets/models/sphereico.obj",
+                            glm::mat4(0.01),
+                            lightMeshModelDatas,
+                            lightMeshesMaterialPoolDummy,
+                            lightMeshesTexturePoolDummy,
+                            0);
+            
+            for (auto lightMeshModelData : lightMeshModelDatas)
+            {
+                vulkanApp->AppendLightMesh(lightMeshModelData);
+            }
+
             vulkanApp->BindResources();
         }
 

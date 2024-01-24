@@ -206,6 +206,7 @@
     <ClCompile Include="src\Graphics\Cleanup\ReinkanComputeClusteredCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanComputeParticleCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanDebugCleanup.cpp" />
+    <ClCompile Include="src\Graphics\Cleanup\ReinkanDeferredLightingCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanParallaxOcclusionCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanPostCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanShadowCleanup.cpp" />
@@ -213,8 +214,10 @@
     <ClCompile Include="src\Graphics\ClusterdShading\ReinkanClusteredShading.cpp" />
     <ClCompile Include="src\Graphics\DebugUI\ReinkanUI.cpp" />
     <ClCompile Include="src\Graphics\DebugPipelineResources\ReinkanDebug.cpp" />
+    <ClCompile Include="src\Graphics\DeferredLighting\ReinkanDeferredLighting.cpp" />
     <ClCompile Include="src\Graphics\Descriptor\DescriptorWrap.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanCleanup.cpp" />
+    <ClCompile Include="src\Graphics\Draw\ReinkanRecordDeferredLight.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordVLight.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordCompute.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordPostProcessing.cpp" />

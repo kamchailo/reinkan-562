@@ -40,6 +40,8 @@ namespace Reinkan::Graphics
 
 		CreateVLightingRenderPass();
 
+		CreateDeferredLightingRenderPass();
+
 		// MultiSampling
 		CreateSwapchainColorResources();
 
@@ -59,6 +61,8 @@ namespace Reinkan::Graphics
 
 		CreateVLightFrameBuffers();
 
+		CreateDeferredLightFrameBuffers();
+
 		// Resources Binding will happen after this point
 	}
 
@@ -75,16 +79,8 @@ namespace Reinkan::Graphics
 			// Default Viewport UBO - Projection and View Matrix
 			CreateScanlineUBO();
 
-			// Clustered
-			CreateComputeClusteredBufferWraps(16, 9, 32, 0.1, 1000.0);
-
-			CreateComputeClusteredDescriptorSetWrap();
-
-			CreateClusteredGridPipeline(appClusteredGridDescriptorWrap);
-
-			CreateClusteredCullLightPipeline(appClusteredCullLightDescriptorWrap);
-
-			CreateComputeClusteredSyncObjects();
+			// Global Light
+			CreateComputeClusteredGlobalLights();
 
 			// Shadow
 			CreateShadowDescriptorSetWrap();
@@ -100,6 +96,11 @@ namespace Reinkan::Graphics
 			CreateScanlineDescriptorWrap();
 
 			CreateScanlinePipeline(appScanlineDescriptorWrap);
+
+			// Deferred Lightinh
+			CreateDeferredLightDescriptorSetWrap();
+
+			CreateDeferredLightPipeline(appDeferredLightDescriptorWrap);
 
 			// Post Processing
 			CreatePostDescriptorSetWrap();

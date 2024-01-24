@@ -177,13 +177,17 @@ namespace Reinkan::Graphics
         CreateScanlineFrameBuffers();
         // Recreate VLight FrameBuffers
         CreateVLightFrameBuffers();
+        // Recreate DeferredLight FrameBuffers
+        CreateDeferredLightFrameBuffers();
 
         // Rebind Descriptor for Scanline
-        appScanlineDescriptorWrap.Write(appDevice, 8, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appScanlineDescriptorWrap.Write(appDevice, 4, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
 
         // Rebind Descriptor for VLight
         appVLightDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
         appVLightDescriptorWrap.Write(appDevice, 2, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
+
+        // Rebind Descriptor for DeferredLight
 
         // Rebind Descriptor for Post Processing
         appPostDescriptorWrap.Write(appDevice, 0, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
@@ -237,6 +241,10 @@ namespace Reinkan::Graphics
             // VLight
             appVLightingRenderTargetImageWraps[i].Destroy(appDevice);
             vkDestroyFramebuffer(appDevice, appVLightFrameBuffers[i], nullptr);
+
+            // DeferredLight
+            appDeferredLightingRenderTargetImageWraps[i].Destroy(appDevice);
+            vkDestroyFramebuffer(appDevice, appDeferredLightFrameBuffers[i], nullptr);
         }
 
         appScanlineImageWrap.clear();
@@ -245,5 +253,6 @@ namespace Reinkan::Graphics
         appScanlineSpecularImageWraps.clear();
         appShadowMapImageWraps.clear();
         appVLightingRenderTargetImageWraps.clear();
+        appDeferredLightingRenderTargetImageWraps.clear();
     }
 }

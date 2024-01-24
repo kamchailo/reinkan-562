@@ -33,28 +33,7 @@ layout(std140, binding = 3) readonly buffer GlobalLightSSBO {
    LightObject globalLights[ ];
 };  
 
-layout(std140, binding = 4) readonly buffer ClusterGridBlock 
-{
-    ClusterGrid clusterGrids[];
-};
-
-layout(std140, binding = 5) readonly buffer ClusterPlaneBlock 
-{
-    ClusterPlane clusterPlanes[];
-};
-
-// LightIndex
-layout(std140, binding = 6) readonly buffer LightIndexSSBO {
-   uint lightIndexList[ ];
-};
-
-layout(std140, binding = 7) readonly buffer LightGridSSBO {
-   LightGrid lightGrids[ ];
-};
-
-layout(binding = 8) uniform sampler2D shadowmap;
-
-// layout(binding = 9) uniform sampler2D[] pyramidalSamplers;
+layout(binding = 4) uniform sampler2D shadowmap;
 
 layout(location = 0) in vec3 worldPos;
 layout(location = 1) in vec3 vertexNormal;
@@ -90,12 +69,6 @@ vec3 colorSample[8] = {vec3(1.0, 0.0, 0.0),
                         vec3(1.0, 0.0, 1.0), 
                         vec3(0.0, 0.0, 0.0), 
                         vec3(1.0, 1.0, 1.0)}; 
-
-float LinearDepth(float depthSample, float zNear, float zFar)
-{
-    float linear = zNear * zFar / (zFar + zNear - depthSample * (zFar - zNear));
-    return linear;
-}
 
 void main() 
 {
@@ -142,54 +115,11 @@ void main()
     }
 
     // Main Directional Light
-    vec3 L = normalize(ubo.globalLightPosition - worldPos);
-    float ambientLight = 0.06;
-    float intensity = 0.7;
-    vec3 V = normalize(-viewDir);
-    vec3 brdfColor = (ambientLight * material.diffuse) + shadow * intensity * EvalBrdf(N, L, V, material);
-    
-    ////////////////////////////////////////
-    //          Grid Calculation
-    ////////////////////////////////////////
-    // Define necessary variables
-    float zNear = clusterPlanes[0].zNear;
-    float zFar = clusterPlanes[tileNumberZ - 1].zFar;
-    float linear = LinearDepth(gl_FragCoord.z, zNear, zFar);
-    float aTerm = float(tileNumberZ) / log(zFar/ zNear);
-    // Z Plane of current Grid
-    uint sliceFlat = uint(log(linear) * (aTerm) - aTerm * log(zNear));
-
-    uint tileSizeX = uint(ubo.screenExtent.x / tileNumberX);
-    uint tileSizeY = uint(ubo.screenExtent.y / tileNumberY);
-    
-    uvec3 tiles = uvec3( gl_FragCoord.x / tileSizeX, 
-                         gl_FragCoord.y /tileSizeY, 
-                         sliceFlat );
-
-    uint tileIndex = tiles.x +
-                     tileNumberX * tiles.y +
-                     (tileNumberX * tileNumberY) * tiles.z;
-
-    LightGrid lightGrid = lightGrids[tileIndex];
-    uint offset = lightGrid.offset;
-
-    // Loop through all light assigned in the grid
-    for(int i = 0; i < lightGrid.size; ++i)
-    {
-        uint lightIndex = lightIndexList[offset + i];
-        LightObject light = globalLights[lightIndex];
-
-        float lightDistance = distance(light.position, worldPos);
-        if(lightDistance >= light.radius)
-        {
-            continue;
-        }
-        L = normalize(light.position - worldPos);
-
-        float intensity = light.intensity * (1 - lightDistance / light.radius);
-        brdfColor += intensity * light.color * EvalBrdf(N, L, V, material);
-        
-    }
+    // vec3 L = normalize(ubo.globalLightPosition - worldPos);
+    // float ambientLight = 0.06;
+    // float intensity = 0.7;
+    // vec3 V = normalize(-viewDir);
+    // vec3 brdfColor = (ambientLight * material.diffuse) + shadow * intensity * EvalBrdf(N, L, V, material);
     
     // Final Color Result
     outColor = vec4(material.diffuse, 1.0);

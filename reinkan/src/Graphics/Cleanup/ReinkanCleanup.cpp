@@ -14,8 +14,9 @@ namespace Reinkan::Graphics
 		//Debug
 		DestroyDebugResources();
 
-		// ComputeClustered
-		DestroyComputeClusteredResources();
+		// Global Light
+		appClusteredGlobalLights.Destroy(appDevice);
+		appClusteredGlobalLights_DEBUG.Destroy(appDevice);
 
 		// ParallaxOcclusion
 		DestroyParallaxOcclusionResources();
@@ -26,9 +27,10 @@ namespace Reinkan::Graphics
 		// VolumetricLighting
 		DestroyVLightResources();
 
-		// ComputeParticle
-		//DestroyComputeParticleResources();
+		// DeferredLighting
+		DestroyDeferredLightResources();
 
+		// Post Processing
 		CleanupPostProcessing();
 
 		{ // Scanline 
@@ -48,6 +50,14 @@ namespace Reinkan::Graphics
 				object.vertexBufferWrap.Destroy(appDevice);
 				object.indexBufferWrap.Destroy(appDevice);
 			}
+
+		// Light Object
+			for (auto lightMesh : appLightMeshTypes)
+			{
+				lightMesh.second.vertexBufferWrap.Destroy(appDevice);
+				lightMesh.second.indexBufferWrap.Destroy(appDevice);
+			}
+
 		// Pipeline & RenderPass
 			vkDestroyPipeline(appDevice, appScanlinePipeline, nullptr);
 			vkDestroyPipelineLayout(appDevice, appScanlinePipelineLayout, nullptr);

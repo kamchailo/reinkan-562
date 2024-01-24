@@ -83,6 +83,8 @@ namespace Reinkan::Graphics
         //    VkShaderStageFlags    stageFlags;
         //    const VkSampler* pImmutableSamplers;
         //} VkDescriptorSetLayoutBinding;
+
+        // layout(binding = 0) uniform UniformBufferObject_T
         std::vector<VkDescriptorSetLayoutBinding> bindingTable;
         uint32_t bindingIndex = 0;
         bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
@@ -90,6 +92,8 @@ namespace Reinkan::Graphics
                                   VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,                                // descriptorType;
                                   1,                                                                // descriptorCount; 
                                   VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT });     // stageFlags;
+
+        // layout(binding = 1) buffer MaterialBlock 
         if (appMaterials.size() > 0)
         {
             bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
@@ -98,6 +102,8 @@ namespace Reinkan::Graphics
                                       1,                                                            // descriptorCount;
                                       VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT }); // stageFlags;
         }
+
+        // layout(binding = 2) uniform sampler2D[] textureSamplers
         if (appTextureImageWraps.size() > 0)
         {
             bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
@@ -106,7 +112,8 @@ namespace Reinkan::Graphics
                                       static_cast<uint32_t>(appTextureImageWraps.size()),           // descriptorCount; // Has to > 0
                                       VK_SHADER_STAGE_FRAGMENT_BIT });                              // stageFlags;
         }
-        // For Forward 100+ Light
+
+        // layout(std140, binding = 3) readonly buffer GlobalLightSSBO
         if (appLightObjects.size() > 0)
         {
             bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
@@ -115,92 +122,45 @@ namespace Reinkan::Graphics
                                       1,                                                    // descriptorCount; 
                                       VK_SHADER_STAGE_FRAGMENT_BIT });                      // stageFlags;
         }
-        // ClusterGridBlock
-        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
-                                       bindingIndex++,                                      // binding;
-                                       VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,                   // descriptorType;
-                                       1,                                                   // descriptorCount; 
-                                       VK_SHADER_STAGE_FRAGMENT_BIT  });                    // stageFlags;
-        // ClusterPlaneBlock
-        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
-                                       bindingIndex++,                                      // binding;
-                                       VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,                   // descriptorType;
-                                       1,                                                   // descriptorCount; 
-                                       VK_SHADER_STAGE_FRAGMENT_BIT });                      // stageFlags;
-        // LightIndexSSBO
-        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
-                                       bindingIndex++,                                      // binding;
-                                       VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,                   // descriptorType;
-                                       1,                                                   // descriptorCount; 
-                                       VK_SHADER_STAGE_FRAGMENT_BIT });                      // stageFlags;
-
-        // LightGridSSBO
-        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
-                                       bindingIndex++,                                      // binding;
-                                       VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,                   // descriptorType;
-                                       1,                                                   // descriptorCount; 
-                                       VK_SHADER_STAGE_FRAGMENT_BIT });                      // stageFlags;
-
-        // Shadow Map
+        
+        // layout(binding = 4) uniform sampler2D shadowmap;
         bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
                                       bindingIndex++,                                               // binding;
                                       VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,                    // descriptorType;
                                       static_cast<uint32_t>(appShadowMapImageWraps.size()),           // descriptorCount; // Has to > 0
                                       VK_SHADER_STAGE_FRAGMENT_BIT });
 
-        // PyramidalMap
-        if (appPyramidalImageWraps.size() > 0)
-        {
-            bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
-                                      bindingIndex++,                                               // binding;
-                                      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,                    // descriptorType;
-                                      static_cast<uint32_t>(appPyramidalImageWraps.size()),           // descriptorCount; // Has to > 0
-                                      VK_SHADER_STAGE_FRAGMENT_BIT });                              // stageFlags;
-        }
 
         appScanlineDescriptorWrap.SetBindings(appDevice,
                                               bindingTable, 
                                               MAX_FRAMES_IN_FLIGHT);
 
         
-        appScanlineDescriptorWrap.Write(appDevice, 0, appScanlineUBO);
+        bindingIndex = 0;
+
+        // 0 - UBO
+        appScanlineDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineUBO);
         
-        // Material only once
+        // 1 - Material only once
         if (appMaterials.size() > 0)
         {
-            appScanlineDescriptorWrap.Write(appDevice, 1, appMaterialBufferWrap.buffer, MAX_FRAMES_IN_FLIGHT);
+            appScanlineDescriptorWrap.Write(appDevice, bindingIndex++, appMaterialBufferWrap.buffer, MAX_FRAMES_IN_FLIGHT);
         }
 
-        // Texture only once
+        // 2 - Texture only once
         if (appTextureImageWraps.size() > 0)
         {
-            appScanlineDescriptorWrap.Write(appDevice, 2, appTextureImageWraps, MAX_FRAMES_IN_FLIGHT);
+            appScanlineDescriptorWrap.Write(appDevice, bindingIndex++, appTextureImageWraps, MAX_FRAMES_IN_FLIGHT);
         }
 
-        // Light Objects
+        // 3 - Light Objects
         if (appLightObjects.size() > 0)
         {
-            appScanlineDescriptorWrap.Write(appDevice, 3, appClusteredGlobalLights.buffer, MAX_FRAMES_IN_FLIGHT);
+            appScanlineDescriptorWrap.Write(appDevice, bindingIndex++, appClusteredGlobalLights.buffer, MAX_FRAMES_IN_FLIGHT);
         }
 
-        appScanlineDescriptorWrap.Write(appDevice, 4, appClusteredGrids.buffer, MAX_FRAMES_IN_FLIGHT);
+        // 4 - Shadow Map
+        appScanlineDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
 
-        appScanlineDescriptorWrap.Write(appDevice, 5, appClusteredPlanes.buffer, MAX_FRAMES_IN_FLIGHT);
-
-        std::swap(appClusteredLightIndexMap[0], appClusteredLightIndexMap[1]);
-        appScanlineDescriptorWrap.Write(appDevice, 6, appClusteredLightIndexMap);
-        std::swap(appClusteredLightIndexMap[0], appClusteredLightIndexMap[1]);
-
-        std::swap(appClusteredLightGrid[0], appClusteredLightGrid[1]);
-        appScanlineDescriptorWrap.Write(appDevice, 7, appClusteredLightGrid);
-        std::swap(appClusteredLightGrid[0], appClusteredLightGrid[1]);
-
-        appScanlineDescriptorWrap.Write(appDevice, 8, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
-
-        // Pyramidal only once
-        if (appPyramidalImageWraps.size() > 0)
-        {
-            appScanlineDescriptorWrap.Write(appDevice, 9, appPyramidalImageWraps, MAX_FRAMES_IN_FLIGHT);
-        }
     }
 }

@@ -97,7 +97,7 @@ namespace Reinkan::Graphics
 
             RecordCommandBuffer(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
-            //RecordDeferredLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
+            RecordDeferredLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
             RecordVLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 

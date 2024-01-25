@@ -81,6 +81,7 @@ void main()
     int shadow = 0;
     vec2 shadowIndex = shadowCoord.xy/shadowCoord.w;
     float lightDepth = texture(shadowmap, shadowIndex).w;
+    // minus constant to remove shadow acne
     float pixelDepth = shadowCoord.w - 0.01;
 
     if(shadowCoord.w > 0 && 

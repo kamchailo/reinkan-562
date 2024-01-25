@@ -22,6 +22,8 @@ layout(binding = 4) uniform sampler2D normalMap;
 
 layout(binding = 5) uniform sampler2D specularMap;
 
+layout(binding = 6) uniform sampler2D deferredImage;
+
 void main()
 {
     vec2 uv = gl_FragCoord.xy/pushConstant.screenExtent;
@@ -55,11 +57,13 @@ void main()
         return;
     }
     
-    outColor = vec4(0.1,0.1,0.7,1.0);
+    // outColor = vec4(0.1,0.1,0.7,1.0);
+
+    outColor = (colorPass * 0.1) + vec4(texture(deferredImage, uv).rgb, 1);
     
     vec3 lightShaft = texture(vlightMap, uv).rgb * pushConstant.debugFloat2;
 
     vec3 dodgeLightShaft = colorPass.rgb * lightShaft;
-    outColor = vec4(colorPass.rgb + dodgeLightShaft + (lightShaft * 0.3), 1);
+    // outColor = vec4(colorPass.rgb + dodgeLightShaft + (lightShaft * 0.3), 1);
 
 }

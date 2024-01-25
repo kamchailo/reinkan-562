@@ -21,9 +21,27 @@ layout(binding = 5) uniform sampler2D normalMap;
 
 layout(binding = 6) uniform sampler2D specularMap;
 
+layout(location = 0) in vec3 worldPos;
+layout(location = 1) in vec3 vertexNormal;
+layout(location = 2) in flat int lightIndex;
+
 layout(location = 0) out vec4 outColor;
 
 void main()
 {
-    outColor = vec4(0.1, 0.0, 0.0, 1.0);
+    vec2 uv = gl_FragCoord.xy / pushConstant.screenExtent;
+
+    vec3 albedo     = texture(renderedImage, uv).rgb;
+    vec3 position   = texture(positionMap, uv).rgb;
+    vec3 normal     = texture(normalMap, uv).rgb;
+    vec3 specular   = texture(specularMap, uv).rgb;
+
+    LightObject currentLight = globalLights[lightIndex];
+
+    float distToLight = length(currentLight.position - position);
+
+    outColor = vec4(vec3(distToLight), 1.0);
+    // outColor = vec4(vec3(lightIndex / 5), 1.0);
+    // outColor = vec4(position, 1.0);
+    // outColor = vec4(1.0);
 }

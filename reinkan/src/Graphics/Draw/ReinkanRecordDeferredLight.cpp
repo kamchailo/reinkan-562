@@ -49,7 +49,7 @@ namespace Reinkan::Graphics
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
             PushConstantDeferredLight pushConstant{};
 
-
+            pushConstant.screenExtent = glm::vec2(appSwapchainExtent.width, appSwapchainExtent.height);
 
             vkCmdPushConstants(commandBuffer,
                 appDeferredLightPipelineLayout,
@@ -60,8 +60,11 @@ namespace Reinkan::Graphics
             );
 
             VkDeviceSize offsets[] = { 0 }; // make it cache friendly by bind all vertices together and use offset
-            //vkCmdBindVertexBuffers(commandBuffer, 0, 1, &appDeferredLightVertexBufferWrap.buffer, offsets);
-            //vkCmdBindIndexBuffer(commandBuffer, appDeferredLightIndexBufferWrap.buffer, 0, VK_INDEX_TYPE_UINT32);
+
+            auto lightMesh = appLightMeshTypes.begin()->second;
+
+            vkCmdBindVertexBuffers(commandBuffer, 0, 1, &lightMesh.vertexBufferWrap.buffer, offsets);
+            vkCmdBindIndexBuffer(commandBuffer, lightMesh.indexBufferWrap.buffer, 0, VK_INDEX_TYPE_UINT32);
 
             /*
             void vkCmdDrawIndexed(
@@ -72,7 +75,7 @@ namespace Reinkan::Graphics
                 int32_t                                     vertexOffset,
                 uint32_t                                    firstInstance);
             */
-            //vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(appDeferredLightIndices.size()), 1, 0, 0, 0);
+            vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(lightMesh.nbIndices), appLightObjects.size(), 0, 0, 0);
 
         }
         vkCmdEndRenderPass(commandBuffer);

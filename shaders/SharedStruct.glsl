@@ -84,10 +84,10 @@ struct PushConstantVLight
 
 struct PushConstantDeferredLight
 {
-    vec4 lightPosition;
     vec4 lightConstant;
     vec4 cameraPosition;
     vec2 shadowMapExtent;
+    vec2 screenExtent;
 };
 
 struct PushConstantPost

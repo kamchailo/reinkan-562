@@ -303,10 +303,9 @@ namespace Reinkan::Graphics
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
-            std::array<VkImageView, 2> attachments = {
+            std::array<VkImageView, 1> attachments = {
                 // Write to appDeferredLightingRenderTargetImageWraps
-                appDeferredLightingRenderTargetImageWraps[i].imageView,
-                appSwapchainDepthImageWrap.imageView
+                appDeferredLightingRenderTargetImageWraps[i].imageView
             };
 
             VkFramebufferCreateInfo framebufferInfo{};

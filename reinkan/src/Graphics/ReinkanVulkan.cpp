@@ -68,57 +68,55 @@ namespace Reinkan::Graphics
 
 	void ReinkanApp::BindResources()
 	{
+		BindModelData();
 
-		{
-			BindModelData();
+		BindMaterials();
 
-			BindMaterials();
+		BindTextures();
 
-			BindTextures();
+		// Default Viewport UBO - Projection and View Matrix
+		CreateScanlineUBO();
 
-			// Default Viewport UBO - Projection and View Matrix
-			CreateScanlineUBO();
+		// Global Light
+		CreateComputeClusteredGlobalLights();
 
-			// Global Light
-			CreateComputeClusteredGlobalLights();
+		// Shadow
+		CreateShadowDescriptorSetWrap();
 
-			// Shadow
-			CreateShadowDescriptorSetWrap();
+		CreateShadowPipeline(appShadowDescriptorWrap);
 
-			CreateShadowPipeline(appShadowDescriptorWrap);
+		// Volumic Light Shaft
+		CreateVLightDescriptorSetWrap();
 
-			// Volumic Light Shaft
-			CreateVLightDescriptorSetWrap();
+		CreateVLightPipeline(appVLightDescriptorWrap);
 
-			CreateVLightPipeline(appVLightDescriptorWrap);
+		// Scanline
+		CreateScanlineDescriptorWrap();
 
-			// Scanline
-			CreateScanlineDescriptorWrap();
+		CreateScanlinePipeline(appScanlineDescriptorWrap);
 
-			CreateScanlinePipeline(appScanlineDescriptorWrap);
+		// Deferred Lightinh
+		CreateDeferredLightDescriptorSetWrap();
 
-			// Deferred Lightinh
-			CreateDeferredLightDescriptorSetWrap();
+		CreateDeferredLightPipeline(appDeferredLightDescriptorWrap);
 
-			CreateDeferredLightPipeline(appDeferredLightDescriptorWrap);
+		// Post Processing
+		CreatePostDescriptorSetWrap();
 
-			// Post Processing
-			CreatePostDescriptorSetWrap();
+		CreatePostPipeline(appPostDescriptorWrap);
 
-			CreatePostPipeline(appPostDescriptorWrap);
+		// Debug
+		CreateDebugBufferWraps();
 
-			// Debug
-			CreateDebugBufferWraps();
+		CreateDebugDescriptorSetWrap();
 
-			CreateDebugDescriptorSetWrap();
+		CreateDebugPipeline(appDebugDescriptorWrap, 
+							VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+							VK_POLYGON_MODE_LINE,
+							1.0f);
 
-			CreateDebugPipeline(appDebugDescriptorWrap, 
-								VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-								VK_POLYGON_MODE_LINE,
-								1.0f);
-
-			std::printf("\n=============================== END OF BIND RESOURCES ===============================\n\n");
-		}
+		std::printf("\n=============================== END OF BIND RESOURCES ===============================\n\n");
+		
 	}
 
 	bool ReinkanApp::ShouldClose()

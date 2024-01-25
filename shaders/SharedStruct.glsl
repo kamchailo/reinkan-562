@@ -98,3 +98,17 @@ struct PushConstantPost
     float debugFloat2;
     float debugFloat3;
 };
+
+vec3 colorSample[8] = {vec3(1.0, 0.0, 0.0), 
+                        vec3(1.0, 1.0, 0.0), 
+                        vec3(0.0, 1.0, 0.0), 
+                        vec3(0.0, 1.0, 1.0), 
+                        vec3(0.0, 0.0, 1.0), 
+                        vec3(1.0, 0.0, 1.0), 
+                        vec3(0.0, 0.0, 0.0), 
+                        vec3(1.0, 1.0, 1.0)}; 
+
+vec3 GetDebugIntColor(int value)
+{
+    return colorSample[value % 8];
+}

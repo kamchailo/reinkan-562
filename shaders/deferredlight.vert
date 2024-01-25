@@ -28,7 +28,7 @@ void main()
     LightObject currentLight = globalLights[gl_InstanceIndex];
 
     // Scale the mesh to light radius
-    mat4 modelTransform = mat4(currentLight.radius) * 10;
+    mat4 modelTransform = mat4(currentLight.radius);
     modelTransform[3] = vec4(currentLight.position, 1.0);
     
     mat4 viewProjMatrix = ubo.proj * ubo.view * modelTransform;

@@ -61,15 +61,6 @@ uint tileNumberX = 16;
 uint tileNumberY = 9;
 uint tileNumberZ = 32;
 
-vec3 colorSample[8] = {vec3(1.0, 0.0, 0.0), 
-                        vec3(1.0, 1.0, 0.0), 
-                        vec3(0.0, 1.0, 0.0), 
-                        vec3(0.0, 1.0, 1.0), 
-                        vec3(0.0, 0.0, 1.0), 
-                        vec3(1.0, 0.0, 1.0), 
-                        vec3(0.0, 0.0, 0.0), 
-                        vec3(1.0, 1.0, 1.0)}; 
-
 void main() 
 {
     Material material = materials[pushConstant.materialId];

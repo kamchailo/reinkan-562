@@ -38,10 +38,27 @@ void main()
 
     LightObject currentLight = globalLights[lightIndex];
 
-    float distToLight = length(currentLight.position - position);
+    vec3 lightDirection = currentLight.position - position;
 
-    outColor = vec4(vec3(distToLight), 1.0);
+    float distToLight = length(lightDirection);
+
+    if(distToLight > currentLight.radius)
+    {
+        discard;
+    }
+
+    float brightness = ((1 / (distToLight * distToLight)) - (1 / (currentLight.radius * currentLight.radius))) * currentLight.intensity;
+
+    // brightness = max(0.0, brightness);
+
+    vec3 lightColor = currentLight.color * brightness;
+
+    vec3 L = normalize(lightDirection);
+
+    float NL = max(dot(normal,L),0);
+
+    outColor = vec4(vec3(lightColor * NL), 1.0);
     // outColor = vec4(vec3(lightIndex / 5), 1.0);
     // outColor = vec4(position, 1.0);
-    // outColor = vec4(1.0);
+    // outColor = vec4(GetDebugIntColor(lightIndex), 1.0);
 }

@@ -1,6 +1,7 @@
 #version 450
 
 #include "SharedStruct.glsl"
+#include "brdf.glsl"
 
 layout(push_constant) uniform PushConstantDeferredLight_T
 {
@@ -42,12 +43,12 @@ void main()
 
     float distToLight = length(lightDirection);
 
-    if(distToLight > currentLight.radius)
+    if(distToLight > currentLight.radius) // Add NL == 0
     {
         discard;
     }
 
-    float brightness = ((1 / (distToLight * distToLight)) - (1 / (currentLight.radius * currentLight.radius))) * currentLight.intensity;
+    float brightness = ((1 / (distToLight * distToLight)) - (1 / (currentLight.radius * currentLight.radius))) * ((currentLight.intensity * currentLight.radius) / 10.0);
 
     // brightness = max(0.0, brightness);
 
@@ -57,8 +58,19 @@ void main()
 
     float NL = max(dot(normal,L),0);
 
-    outColor = vec4(vec3(lightColor * NL), 1.0);
+    Material pixelMaterial;
+
+    pixelMaterial.diffuse = albedo;
+    pixelMaterial.specular = specular;
+    pixelMaterial.shininess = 0.2;
+
+    vec3 V = normalize(pushConstant.cameraPosition.xyz - position);
+
+    vec3 brdfColor = EvalBrdf(normal, L, V, pixelMaterial);
+
+    outColor = vec4(brdfColor * lightColor, 1.0);
     // outColor = vec4(vec3(lightIndex / 5), 1.0);
-    // outColor = vec4(position, 1.0);
+    // outColor = vec4(lightDirection, 1.0);
     // outColor = vec4(GetDebugIntColor(lightIndex), 1.0);
+    // outColor = vec4(vec3(NL), 1.0);
 }

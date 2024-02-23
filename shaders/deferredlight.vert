@@ -32,7 +32,7 @@ void main()
     modelTransform[3] = vec4(currentLight.position, 1.0);
     
     mat4 viewProjMatrix = ubo.proj * ubo.view * modelTransform;
-    gl_Position = viewProjMatrix * vec4(inPosition, 1.0);;
+    gl_Position = viewProjMatrix * vec4(inPosition, 1.0);
     
     
     worldPos = (modelTransform * vec4(inPosition, 1.0)).xyz;

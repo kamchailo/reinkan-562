@@ -44,10 +44,6 @@ void main()
     if((pushConstant.debugFlag & 0x4) > 1)
     {
         outColor = vec4(texture(positionMap, uv).rgb, 1);
-        if(outColor.r > 1.0 || outColor.g > 1.0 || outColor.b > 1.0)
-        {
-            outColor = vec4(1.0);
-        }
         return;
     }
     if((pushConstant.debugFlag & 0x8) > 1)
@@ -61,6 +57,11 @@ void main()
         return;
     }
     
+
+    // after global light
+
+    // add local lights
+
     // outColor = vec4(0.1,0.1,0.7,1.0);
 
     outColor = (colorPass * 0.1) + vec4(texture(deferredImage, uv).rgb, 1);

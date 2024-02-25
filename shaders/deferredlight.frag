@@ -62,7 +62,7 @@ void main()
 
     pixelMaterial.diffuse = albedo;
     pixelMaterial.specular = specular;
-    pixelMaterial.shininess = 0.2;
+    pixelMaterial.shininess = pushConstant.debugFloat;
 
     vec3 V = normalize(pushConstant.cameraPosition.xyz - position);
 

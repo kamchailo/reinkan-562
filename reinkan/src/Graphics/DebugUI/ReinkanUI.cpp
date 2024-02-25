@@ -109,7 +109,7 @@ namespace Reinkan::Graphics
 
         ImGui::Checkbox("Specular Map", &appImguiBool5);
         
-        //ImGui::SliderFloat("Debug Float: ", &appDebugFloat, 10.0f, 180.0f);
+        ImGui::SliderFloat("Debug Float: ", &appDebugFloat, 0.01f, 2.0f);
 
         //ImGui::SliderFloat("Debug Float2: ", &appDebugFloat2, 0.0f, 5.0f, "%.2f");
 

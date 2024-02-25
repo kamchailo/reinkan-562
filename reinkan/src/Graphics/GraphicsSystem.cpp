@@ -84,7 +84,7 @@ namespace Reinkan::Graphics
                 {
                     glm::vec3 position{ i * space, 0.0f, j * space };
 
-                    glm::vec3 color{ 1.0, 1.0, 1.0 };
+                    glm::vec3 color{ 1.0, 1.0, 0.5 };
                     color.r -= i * colorOffset;
                     color.g -= j * colorOffset;
 

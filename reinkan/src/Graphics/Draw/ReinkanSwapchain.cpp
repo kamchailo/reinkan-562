@@ -188,15 +188,34 @@ namespace Reinkan::Graphics
         appVLightDescriptorWrap.Write(appDevice, 2, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
 
         // Rebind Descriptor for DeferredLight
+        uint32_t bindingIndex = 0;
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineUBO);
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+
+        // 3 - Light Objects
+        if (appLightObjects.size() > 0)
+        {
+            appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appClusteredGlobalLights.buffer, MAX_FRAMES_IN_FLIGHT);
+        }
+
+        // Color Attachment
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
+        // Position Attachment
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Normal Attachment
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Specular Attachment
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
 
         // Rebind Descriptor for Post Processing
-        appPostDescriptorWrap.Write(appDevice, 0, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 2, appVLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 3, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 4, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 5, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
-
+        bindingIndex = 0;
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appVLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appDeferredLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
     }
 
     void ReinkanApp::CleanupSwapchain()

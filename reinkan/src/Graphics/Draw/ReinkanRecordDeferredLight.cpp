@@ -51,6 +51,7 @@ namespace Reinkan::Graphics
 
             pushConstant.screenExtent = glm::vec2(appSwapchainExtent.width, appSwapchainExtent.height);
             pushConstant.cameraPosition = glm::vec4(appMainCamera->GetPosition(), 1.0);
+            pushConstant.debugFloat = appDebugFloat;
 
             vkCmdPushConstants(commandBuffer,
                 appDeferredLightPipelineLayout,

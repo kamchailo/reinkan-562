@@ -75,7 +75,7 @@ void main()
     vec3 brdfColor = EvalBrdf(normal, L, V, pixelMaterial) * 0.5;
 
     // add local lights
-    vec3 finalColor = (colorPass * 0.0).rgb + brdfColor + texture(deferredImage, uv).rgb;
+    vec3 finalColor = (colorPass * 0.1).rgb + brdfColor + texture(deferredImage, uv).rgb;
 
     outColor = vec4(finalColor, 1.0);
 

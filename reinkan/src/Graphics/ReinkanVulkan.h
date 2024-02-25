@@ -254,7 +254,7 @@ namespace Reinkan::Graphics
         uint32_t appCurrentFrame = 0;
 
     // ReinkanRecordScanline.cpp
-        void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+        void RecordScanline(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
     // ReinkanRecordCompute.cpp
         void RecordComputeCommandBuffer(VkCommandBuffer commandBuffer, 

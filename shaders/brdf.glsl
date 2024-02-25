@@ -1,5 +1,22 @@
 #define PI 3.141592
 
+float G1(vec3 w, vec3 m, vec3 N, float alpha_suqared)
+{
+    float wN = dot(w, N);
+    float wm = dot(w, m);
+    float tan_square_theta_m = (1.0 - wN * wN) / (wN * wN);
+    float G1;
+    if(wN > 1.0 || sqrt(tan_square_theta_m) == 0) 
+    {
+        G1 = 1.0;
+    } 
+    else 
+    {
+        G1 = clamp(wm / wN, 0.0, 1.0) * 2 / (1 + sqrt(1 + alpha_suqared * tan_square_theta_m));
+    }
+    return G1;
+}
+
 vec3 EvalBrdf(vec3 N, vec3 L, vec3 V, Material material)
 {
     vec3 Kd = material.diffuse;
@@ -25,41 +42,8 @@ vec3 EvalBrdf(vec3 N, vec3 L, vec3 V, Material material)
     // float D = alpha_square
         //    / (PI * pow(mN, 4) * pow(alpha_square + tan_square_theta_m, 2));
 
+    // G factor
+    float G = G1(V, H, N, alpha_square) * G1(L, H, N, alpha_square);
 
-    // G factor with V
-    float mV = dot(H, V);
-    float NV = dot(N, V);
-    float tan_square_theta_v = (1.0 -  NV * NV) /  (NV * NV);
-    float GV;
-    if(NV > 1.0 || sqrt(tan_square_theta_v) == 0)
-    {
-        GV = 1.0;
-    }
-    else
-    {
-        int x;
-        if (mV / NV > 0) x = 1;
-        else x = 0;
-        GV = x * 2 / (1.0 + sqrt(1 + alpha_square * tan_square_theta_v));
-    }
-
-    // G factor with L
-    float mL = LH; // dot(L, H);
-    float NL = dot(N, L);
-    float tan_square_theta_l = (1.0 -  NL * NL) /  (NL * NL);
-    float GL;
-    if(NL > 1.0 || sqrt(tan_square_theta_l) == 0)
-    {
-        GL = 1.0;
-    }
-    else
-    {
-        int x;
-        if (mL / NL > 0) x = 1;
-        else x = 0;
-        GL = x * 2 / (1.0 + sqrt(1 + alpha_square * tan_square_theta_l));
-    }
-    float G = GV * GL;
-
-    return ( Kd/PI + ((D*F*G) / ( 4 * abs(dot(V,N)) * abs(dot(L,N)) )) );
+    return ( (Kd * max(dot(N, L), 0.0) )/PI + ((D*F*G) / ( 4 * abs(dot(V,N)) * abs(dot(L,N)) )) );
 }   

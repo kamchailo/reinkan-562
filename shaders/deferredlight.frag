@@ -62,7 +62,6 @@ void main()
     float NL = max(dot(normal,L),0);
 
     Material pixelMaterial;
-
     pixelMaterial.diffuse = albedo;
     pixelMaterial.specular = specular;
     pixelMaterial.shininess = pushConstant.debugFloat;

@@ -75,6 +75,8 @@ namespace Reinkan
 	struct PushConstantPost
 	{
 		alignas(8) glm::vec2 screenExtent;
+		alignas(16) glm::vec4 globalLightPosition;
+		alignas(16) glm::vec4 cameraPosition;
 		alignas(4) uint32_t debugFlag;
 		alignas(4) float debugFloat;
 		alignas(4) float debugFloat2;

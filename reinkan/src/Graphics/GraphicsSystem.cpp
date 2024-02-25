@@ -70,7 +70,7 @@ namespace Reinkan::Graphics
 
             vulkanApp->AppendLight({ glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0,0.9,1.0), 1.0, 1.0 });
             
-            float space = 0.2f;
+            float space = 0.1f;
 
             int width = 200;
             
@@ -91,7 +91,7 @@ namespace Reinkan::Graphics
                     color.g -= j * colorOffset;
 
                     float intensity = 1.0f;
-                    float radius = 0.4f;
+                    float radius = 0.2f;
 
                     vulkanApp->AppendLight({ positionOffset + position, color, intensity, radius });
                 }

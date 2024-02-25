@@ -2,6 +2,7 @@
 
 #include "SharedStruct.glsl"
 #include "vibrance.glsl"
+#include "brdf.glsl"
 
 layout(push_constant) uniform PushConstantRaster_T
 {
@@ -57,14 +58,29 @@ void main()
         return;
     }
     
+    // Global light
+    // vec3 albedo     = texture(renderedImage, uv).rgb;
+    vec3 position   = texture(positionMap, uv).rgb;
+    vec3 normal     = normalize(texture(normalMap, uv).rgb);
+    vec3 specular   = texture(specularMap, uv).rgb;
 
-    // after global light
+    vec3 L = normalize(pushConstant.globalLightPosition.xyz - position);
+    vec3 V = normalize(pushConstant.cameraPosition.xyz - position);
+
+    Material pixelMaterial;
+    pixelMaterial.diffuse = colorPass.rgb;
+    pixelMaterial.specular = specular;
+    pixelMaterial.shininess = pushConstant.debugFloat;
+
+    vec3 brdfColor = EvalBrdf(normal, L, V, pixelMaterial) * 0.5;
 
     // add local lights
+    vec3 finalColor = (colorPass * 0.0).rgb + brdfColor + texture(deferredImage, uv).rgb;
+
+    outColor = vec4(finalColor, 1.0);
 
     // outColor = vec4(0.1,0.1,0.7,1.0);
 
-    outColor = (colorPass * 0.1) + vec4(texture(deferredImage, uv).rgb, 1);
     
     vec3 lightShaft = texture(vlightMap, uv).rgb * pushConstant.debugFloat2;
 

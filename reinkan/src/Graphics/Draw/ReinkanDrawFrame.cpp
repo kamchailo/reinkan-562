@@ -95,7 +95,7 @@ namespace Reinkan::Graphics
 
             RecordShadowPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
-            RecordCommandBuffer(appCommandBuffers[appCurrentFrame], appCurrentFrame);
+            RecordScanline(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
             RecordDeferredLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 

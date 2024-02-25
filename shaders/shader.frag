@@ -104,6 +104,8 @@ void main()
         normalMap = (normalMap * 2.0) - 1.0;
         N = normalize(TBNMatrix * normalMap);
         N.y = -N.y;
+        outColor = vec4(1,0,0,1);
+        return;
     }
 
     // Main Directional Light

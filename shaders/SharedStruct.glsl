@@ -95,6 +95,8 @@ struct PushConstantDeferredLight
 struct PushConstantPost
 {
     vec2 screenExtent;
+    vec4 globalLightPosition;
+    vec4 cameraPosition;
     uint debugFlag;
     float debugFloat;
     float debugFloat2;

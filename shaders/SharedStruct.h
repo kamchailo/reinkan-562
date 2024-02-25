@@ -69,6 +69,7 @@ namespace Reinkan
 		alignas(8) glm::vec2 shadowMapExtent;
 		alignas(8) glm::vec2 screenExtent;
 		alignas(4) float debugFloat;
+		alignas(4) float debugFloat2;
 	};
 
 	struct PushConstantPost

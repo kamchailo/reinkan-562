@@ -89,6 +89,7 @@ struct PushConstantDeferredLight
     vec2 shadowMapExtent;
     vec2 screenExtent;
     float debugFloat;
+    float debugFloat2;
 };
 
 struct PushConstantPost

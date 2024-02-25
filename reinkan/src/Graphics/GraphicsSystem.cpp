@@ -82,14 +82,16 @@ namespace Reinkan::Graphics
             {
                 for (int j = 0; j < width; ++j)
                 {
-                    glm::vec3 position{ i * space, 0.0f, j * space };
+                    float randOffsetX = static_cast<float>(std::rand()) / _I16_MAX - 0.5f;
+                    float randOffsetZ = static_cast<float>(std::rand()) / _I16_MAX - 0.5f;
+                    glm::vec3 position{ i * space + randOffsetX, 0.0f, j * space + randOffsetZ };
 
                     glm::vec3 color{ 1.0, 1.0, 0.5 };
                     color.r -= i * colorOffset;
                     color.g -= j * colorOffset;
 
                     float intensity = 1.0f;
-                    float radius = 0.2f;
+                    float radius = 0.4f;
 
                     vulkanApp->AppendLight({ positionOffset + position, color, intensity, radius });
                 }

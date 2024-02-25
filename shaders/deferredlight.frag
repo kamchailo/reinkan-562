@@ -48,6 +48,9 @@ void main()
         discard;
     }
 
+    // Debug Intensity
+    currentLight.intensity = pushConstant.debugFloat2 * currentLight.intensity;
+
     float brightness = ((1 / (distToLight * distToLight)) - (1 / (currentLight.radius * currentLight.radius))) * ((currentLight.intensity * currentLight.radius) / 10.0);
 
     // brightness = max(0.0, brightness);

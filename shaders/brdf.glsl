@@ -4,15 +4,15 @@ float G1(vec3 w, vec3 m, vec3 N, float alpha_suqared)
 {
     float wN = dot(w, N);
     float wm = dot(w, m);
-    float tan_square_theta_m = (1.0 - wN * wN) / (wN * wN);
+    float tan_square_theta_w = (1.0 - wN * wN) / (wN * wN);
     float G1;
-    if(wN > 1.0 || sqrt(tan_square_theta_m) == 0) 
+    if(wN > 1.0 || sqrt(tan_square_theta_w) == 0) 
     {
         G1 = 1.0;
     } 
     else 
     {
-        G1 = clamp(wm / wN, 0.0, 1.0) * 2 / (1 + sqrt(1 + alpha_suqared * tan_square_theta_m));
+        G1 = clamp(wm / wN, 0.0, 1.0) * (2 / (1 + sqrt(1 + alpha_suqared * tan_square_theta_w)));
     }
     return G1;
 }

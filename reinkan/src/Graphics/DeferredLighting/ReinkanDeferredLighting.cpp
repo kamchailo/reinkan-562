@@ -121,7 +121,7 @@ namespace Reinkan::Graphics
         }
 
         // Color Attachment
-        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWraps, MAX_FRAMES_IN_FLIGHT);
         // Position Attachment
         appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
         // Normal Attachment

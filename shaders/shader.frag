@@ -85,11 +85,6 @@ void main()
         }
     }
 
-    if((pushConstant.debugFlag & 0x8) > 0)
-    {
-        shadow = 1;
-    }
-
     if(material.diffuseMapId != -1)
     {
         vec3 diffuse = texture(textureSamplers[material.diffuseMapId], fragTexCoord).rgb;
@@ -116,7 +111,7 @@ void main()
     // vec3 brdfColor = (ambientLight * material.diffuse) + shadow * intensity * EvalBrdf(N, L, V, material);
     
     // Final Color Result
-    outColor = vec4(material.diffuse, 1.0);
+    outColor = vec4(material.diffuse, shadow);
 
     outPosition = vec4(worldPos, length(viewDir));
 

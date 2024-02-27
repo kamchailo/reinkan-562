@@ -199,7 +199,7 @@ namespace Reinkan::Graphics
         }
 
         // Color Attachment
-        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWraps, MAX_FRAMES_IN_FLIGHT);
         // Position Attachment
         appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
         // Normal Attachment
@@ -209,7 +209,7 @@ namespace Reinkan::Graphics
 
         // Rebind Descriptor for Post Processing
         bindingIndex = 0;
-        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appVLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
@@ -239,7 +239,7 @@ namespace Reinkan::Graphics
         for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
         {
             // Scanline ImageWrap
-            appScanlineImageWrap[i].Destroy(appDevice);
+            appScanlineImageWraps[i].Destroy(appDevice);
 
             // ScanlinePosition ImageWrap
             appScanlinePositionImageWraps[i].Destroy(appDevice);
@@ -266,7 +266,7 @@ namespace Reinkan::Graphics
             vkDestroyFramebuffer(appDevice, appDeferredLightFrameBuffers[i], nullptr);
         }
 
-        appScanlineImageWrap.clear();
+        appScanlineImageWraps.clear();
         appScanlinePositionImageWraps.clear();
         appScanlineNormalImageWraps.clear();
         appScanlineSpecularImageWraps.clear();

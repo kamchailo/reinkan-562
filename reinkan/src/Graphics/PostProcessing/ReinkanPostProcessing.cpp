@@ -140,7 +140,7 @@ namespace Reinkan::Graphics
                                             bindingTable,
                                             MAX_FRAMES_IN_FLIGHT);
         bindingIndex = 0;
-        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appVLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);

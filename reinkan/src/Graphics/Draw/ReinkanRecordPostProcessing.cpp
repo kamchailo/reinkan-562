@@ -9,7 +9,7 @@ namespace Reinkan::Graphics
         VkRenderPassBeginInfo renderPassBeginInfo{};
         renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassBeginInfo.renderPass = appPostRenderPass;
-        renderPassBeginInfo.framebuffer = appSwapchainFramebuffers[imageIndex]; // Output to Swapchain
+        renderPassBeginInfo.framebuffer = appSwapchainFramebuffers[imageIndex]; // Output to Swapchain // screen
         renderPassBeginInfo.renderArea.offset = { 0, 0 };
         renderPassBeginInfo.renderArea.extent = appSwapchainExtent;
 

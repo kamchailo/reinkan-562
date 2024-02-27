@@ -434,7 +434,7 @@ namespace Reinkan::Graphics
         VkPipelineLayout                appPostPipelineLayout;
 
         std::vector<VkFramebuffer>      appScanlineFrameBuffers;
-        std::vector<ImageWrap>          appScanlineImageWrap;
+        std::vector<ImageWrap>          appScanlineImageWraps;
         std::vector<ImageWrap>          appScanlinePositionImageWraps;
         std::vector<ImageWrap>          appScanlineNormalImageWraps;
         std::vector<ImageWrap>          appScanlineSpecularImageWraps;
@@ -526,6 +526,8 @@ namespace Reinkan::Graphics
         bool        appImguiBool3{ false };
         bool        appImguiBool4{ false };
         bool        appImguiBool5{ false };
+        bool        appImguiBool6{ false };
+
 
     ////////////////////////////////////////
     //          Compute Shaders

@@ -36,106 +36,125 @@ namespace Reinkan::Graphics
 
     void ReinkanApp::CreateScanlineFrameBuffers()
     {
-        appScanlineImageWrap.resize(MAX_FRAMES_IN_FLIGHT);
+        // Attachment for Scanline Render Pass
+        appScanlineImageWraps.resize(MAX_FRAMES_IN_FLIGHT);
         appScanlinePositionImageWraps.resize(MAX_FRAMES_IN_FLIGHT);
         appScanlineNormalImageWraps.resize(MAX_FRAMES_IN_FLIGHT);
         appScanlineSpecularImageWraps.resize(MAX_FRAMES_IN_FLIGHT);
 
         for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
         {
-            appScanlineImageWrap[i] = CreateImageWrap(appSwapchainExtent.width,
-                appSwapchainExtent.height,
-                appSwapchainImageFormat,                                        // Image Format
-                VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
-                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
-                | VK_IMAGE_USAGE_TRANSFER_DST_BIT
-                | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
-                1,
-                appMsaaSamples);
+            //////////////////////////////////
+            //      Color Attachment
+            //////////////////////////////////
+            {
+                appScanlineImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
+                    appSwapchainExtent.height,
+                    appSwapchainImageFormat,                                        // Image Format
+                    VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
+                    | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+                    | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
+                    1,
+                    appMsaaSamples);
+                TransitionImageLayout(appScanlineImageWraps[i].image,
+                    appSwapchainImageFormat,
+                    VK_IMAGE_LAYOUT_UNDEFINED,
+                    VK_IMAGE_LAYOUT_GENERAL);
 
-            TransitionImageLayout(appScanlineImageWrap[i].image,
-                appSwapchainImageFormat,
-                VK_IMAGE_LAYOUT_UNDEFINED,
-                VK_IMAGE_LAYOUT_GENERAL);
+                appScanlineImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
-            appScanlineImageWrap[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+                appScanlineImageWraps[i].imageView = CreateImageView(appScanlineImageWraps[i].image, appSwapchainImageFormat);
+                appScanlineImageWraps[i].sampler = CreateImageSampler();
+            }
 
-            appScanlineImageWrap[i].imageView = CreateImageView(appScanlineImageWrap[i].image, appSwapchainImageFormat);
-            appScanlineImageWrap[i].sampler = CreateImageSampler();
+            //////////////////////////////////
+            //      Position Attachment
+            //////////////////////////////////
+            {
+                appScanlinePositionImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
+                    appSwapchainExtent.height,
+                    VK_FORMAT_R32G32B32A32_SFLOAT,                                        // Image Format
+                    VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
+                    | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+                    | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
+                    1,
+                    appMsaaSamples);
 
+                TransitionImageLayout(appScanlinePositionImageWraps[i].image,
+                    VK_FORMAT_R32G32B32A32_SFLOAT,
+                    VK_IMAGE_LAYOUT_UNDEFINED,
+                    VK_IMAGE_LAYOUT_GENERAL);
 
-            appScanlinePositionImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
-                appSwapchainExtent.height,
-                VK_FORMAT_R32G32B32A32_SFLOAT,                                        // Image Format
-                VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
-                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
-                | VK_IMAGE_USAGE_TRANSFER_DST_BIT
-                | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
-                1,
-                appMsaaSamples);
+                appScanlinePositionImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
-            TransitionImageLayout(appScanlinePositionImageWraps[i].image,
-                VK_FORMAT_R32G32B32A32_SFLOAT,
-                VK_IMAGE_LAYOUT_UNDEFINED,
-                VK_IMAGE_LAYOUT_GENERAL);
+                appScanlinePositionImageWraps[i].imageView = CreateImageView(appScanlinePositionImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
+                appScanlinePositionImageWraps[i].sampler = CreateNearestImageSampler();
+            }
 
-            appScanlinePositionImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+            //////////////////////////////////
+            //      Normal Attachment
+            //////////////////////////////////
+            {
+                appScanlineNormalImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
+                    appSwapchainExtent.height,
+                    VK_FORMAT_R32G32B32A32_SFLOAT,                                        // Image Format
+                    VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
+                    | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+                    | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
+                    1,
+                    appMsaaSamples);
 
-            appScanlinePositionImageWraps[i].imageView = CreateImageView(appScanlinePositionImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
-            appScanlinePositionImageWraps[i].sampler = CreateNearestImageSampler();
+                TransitionImageLayout(appScanlineNormalImageWraps[i].image,
+                    VK_FORMAT_R32G32B32A32_SFLOAT,
+                    VK_IMAGE_LAYOUT_UNDEFINED,
+                    VK_IMAGE_LAYOUT_GENERAL);
 
-            appScanlineNormalImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
-                appSwapchainExtent.height,
-                VK_FORMAT_R32G32B32A32_SFLOAT,                                        // Image Format
-                VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
-                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
-                | VK_IMAGE_USAGE_TRANSFER_DST_BIT
-                | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
-                1,
-                appMsaaSamples);
+                appScanlineNormalImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
-            TransitionImageLayout(appScanlineNormalImageWraps[i].image,
-                VK_FORMAT_R32G32B32A32_SFLOAT,
-                VK_IMAGE_LAYOUT_UNDEFINED,
-                VK_IMAGE_LAYOUT_GENERAL);
+                appScanlineNormalImageWraps[i].imageView = CreateImageView(appScanlineNormalImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
+                appScanlineNormalImageWraps[i].sampler = CreateNearestImageSampler();
+            }
 
-            appScanlineNormalImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+            //////////////////////////////////
+            //      Specular Attachment
+            //////////////////////////////////
+            {
+                appScanlineSpecularImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
+                    appSwapchainExtent.height,
+                    VK_FORMAT_R32G32B32A32_SFLOAT,                                        // Image Format
+                    VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
+                    | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+                    | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
+                    1,
+                    appMsaaSamples);
 
-            appScanlineNormalImageWraps[i].imageView = CreateImageView(appScanlineNormalImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
-            appScanlineNormalImageWraps[i].sampler = CreateNearestImageSampler();
+                TransitionImageLayout(appScanlineSpecularImageWraps[i].image,
+                    VK_FORMAT_R32G32B32A32_SFLOAT,
+                    VK_IMAGE_LAYOUT_UNDEFINED,
+                    VK_IMAGE_LAYOUT_GENERAL);
 
-            appScanlineSpecularImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
-                appSwapchainExtent.height,
-                VK_FORMAT_R32G32B32A32_SFLOAT,                                        // Image Format
-                VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
-                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
-                | VK_IMAGE_USAGE_TRANSFER_DST_BIT
-                | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
-                1,
-                appMsaaSamples);
+                appScanlineSpecularImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
-            TransitionImageLayout(appScanlineSpecularImageWraps[i].image,
-                VK_FORMAT_R32G32B32A32_SFLOAT,
-                VK_IMAGE_LAYOUT_UNDEFINED,
-                VK_IMAGE_LAYOUT_GENERAL);
-
-            appScanlineSpecularImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-
-            appScanlineSpecularImageWraps[i].imageView = CreateImageView(appScanlineSpecularImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
-            appScanlineSpecularImageWraps[i].sampler = CreateNearestImageSampler();
+                appScanlineSpecularImageWraps[i].imageView = CreateImageView(appScanlineSpecularImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
+                appScanlineSpecularImageWraps[i].sampler = CreateNearestImageSampler();
+            }
         }
 
+        // Create Frame Buffers according to MAX_FRAMES_IN_FLIGHT
         appScanlineFrameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
 
             std::array<VkImageView, 5> attachments = {
-                appScanlineImageWrap[i].imageView,
+                appScanlineImageWraps[i].imageView,
                 appScanlinePositionImageWraps[i].imageView,
                 appScanlineNormalImageWraps[i].imageView,
                 appScanlineSpecularImageWraps[i].imageView,

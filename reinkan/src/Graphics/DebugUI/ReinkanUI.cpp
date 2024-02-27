@@ -93,6 +93,11 @@ namespace Reinkan::Graphics
         ImGui::Text("Camera Position:");
         ImGui::Text("[%.3f, %.3f, %.3f]", camPos.x, camPos.y, camPos.z);    
 
+        ImGui::InputFloat("x: ", &camPos.x);
+        ImGui::InputFloat("y: ", &camPos.y);
+        ImGui::InputFloat("z: ", &camPos.z);
+        appMainCamera->SetPosition(camPos);
+
         ImGui::Text("Num of Lights: %d", appLightObjects.size());
 
         //ImGui::Checkbox("Show Default Light Shaft: ", &appImguiBool1);
@@ -108,6 +113,8 @@ namespace Reinkan::Graphics
         ImGui::Checkbox("Normal Map", &appImguiBool4);
 
         ImGui::Checkbox("Specular Map", &appImguiBool5);
+
+        ImGui::Checkbox("Shadow", &appImguiBool6);
         
         ImGui::SliderFloat("Debug Shininess: ", &appDebugFloat, 0.01f, 2.0f);
 
@@ -133,6 +140,9 @@ namespace Reinkan::Graphics
 
         if (appImguiBool5) { appDebugFlag = appDebugFlag | 0x10; }
         else { appDebugFlag &= INT32_MAX - 0x10; }
+
+        if (appImguiBool6) { appDebugFlag = appDebugFlag | 0x20; }
+        else { appDebugFlag &= INT32_MAX - 0x20; }
 
     }
 

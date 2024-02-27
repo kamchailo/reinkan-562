@@ -29,7 +29,8 @@ void main()
 {
     vec2 uv = gl_FragCoord.xy/pushConstant.screenExtent;
     // outColor = vec4(uv, 0, 1);
-    vec4 colorPass = vec4(texture(renderedImage, uv).rgb, 1);
+    vec4 colorPass = texture(renderedImage, uv);
+    float shadow = colorPass.a;
 
     if((pushConstant.debugFlag & 0x1) >= 1)
     {
@@ -57,6 +58,10 @@ void main()
         outColor = vec4(texture(specularMap, uv).rgb, 1);
         return;
     }
+    if((pushConstant.debugFlag & 0x20) > 1)
+    {
+        shadow = 1.0;
+    }
     
     // Global light
     // vec3 albedo     = texture(renderedImage, uv).rgb;
@@ -74,17 +79,14 @@ void main()
 
     vec3 brdfColor = EvalBrdf(normal, L, V, pixelMaterial) * 0.5;
 
+
     // add local lights
-    vec3 finalColor = (colorPass * 0.1).rgb + brdfColor + texture(deferredImage, uv).rgb;
+    vec3 finalColor = (colorPass * 0.1).rgb + shadow * brdfColor + texture(deferredImage, uv).rgb;
 
     outColor = vec4(finalColor, 1.0);
 
-    // outColor = vec4(0.1,0.1,0.7,1.0);
-
-    
-    vec3 lightShaft = texture(vlightMap, uv).rgb * pushConstant.debugFloat2;
-
-    vec3 dodgeLightShaft = colorPass.rgb * lightShaft;
-    // outColor = vec4(colorPass.rgb + dodgeLightShaft + (lightShaft * 0.3), 1);
+    // vec3 lightShaft = texture(vlightMap, uv).rgb * pushConstant.debugFloat2;
+    // vec3 dodgeLightShaft = finalColor * lightShaft;
+    // outColor = vec4(finalColor + dodgeLightShaft + (lightShaft * 0.3), 1);
 
 }

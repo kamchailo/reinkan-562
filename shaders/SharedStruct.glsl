@@ -82,11 +82,37 @@ struct PushConstantVLight
     vec2 shadowMapExtent;
 };
 
+struct PushConstantDeferredLight
+{
+    vec4 lightConstant;
+    vec4 cameraPosition;
+    vec2 shadowMapExtent;
+    vec2 screenExtent;
+    float debugFloat;
+    float debugFloat2;
+};
+
 struct PushConstantPost
 {
     vec2 screenExtent;
+    vec4 globalLightPosition;
+    vec4 cameraPosition;
     uint debugFlag;
     float debugFloat;
     float debugFloat2;
     float debugFloat3;
 };
+
+vec3 colorSample[8] = {vec3(1.0, 0.0, 0.0), 
+                        vec3(1.0, 1.0, 0.0), 
+                        vec3(0.0, 1.0, 0.0), 
+                        vec3(0.0, 1.0, 1.0), 
+                        vec3(0.0, 0.0, 1.0), 
+                        vec3(1.0, 0.0, 1.0), 
+                        vec3(0.0, 0.0, 0.0), 
+                        vec3(1.0, 1.0, 1.0)}; 
+
+vec3 GetDebugIntColor(int value)
+{
+    return colorSample[value % 8];
+}

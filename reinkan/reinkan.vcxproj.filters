@@ -207,6 +207,15 @@
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordVLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\DeferredLighting\ReinkanDeferredLighting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Cleanup\ReinkanDeferredLightingCleanup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Draw\ReinkanRecordDeferredLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Graphics\ReinkanVulkan.h">

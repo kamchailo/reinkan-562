@@ -11,7 +11,7 @@ namespace Reinkan::Graphics
     * - Interface how to let user create descriptor set easily
     * - Pass in pipeline and descriptor set
     */
-    void ReinkanApp::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+    void ReinkanApp::RecordScanline(VkCommandBuffer commandBuffer, uint32_t imageIndex)
     {
 
         VkRenderPassBeginInfo renderPassBeginInfo{};
@@ -66,7 +66,7 @@ namespace Reinkan::Graphics
                 pushConstant.materialId = object.materialId;
                 pushConstant.objectId = object.objectId;
                 pushConstant.modelMatrix = object.transform;
-                pushConstant.normalMatrix = glm::transpose(glm::inverse(glm::mat3(object.transform)));
+                pushConstant.normalMatrix = glm::transpose( glm::inverse(glm::mat3(object.transform)));
                 pushConstant.debugFlag = appDebugFlag;
                 pushConstant.debugFloat = appDebugFloat;
                 pushConstant.debugFloat2 = appDebugFloat2;

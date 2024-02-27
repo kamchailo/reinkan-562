@@ -110,6 +110,10 @@
     <PostBuildEvent>
       <Command>copy "..\lib\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>cd "$(SolutionDir)shaders"
+call "compile.bat"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -139,6 +143,10 @@
     <PostBuildEvent>
       <Command>copy "..\lib\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>cd "$(SolutionDir)shaders"
+call "compile.bat"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -164,6 +172,10 @@
     <PostBuildEvent>
       <Command>copy "..\lib\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>cd "$(SolutionDir)shaders"
+call "compile.bat"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -193,6 +205,10 @@
     <PostBuildEvent>
       <Command>copy "..\lib\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>cd "$(SolutionDir)shaders"
+call "compile.bat"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="imgui\backends\imgui_impl_glfw.cpp" />
@@ -206,6 +222,7 @@
     <ClCompile Include="src\Graphics\Cleanup\ReinkanComputeClusteredCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanComputeParticleCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanDebugCleanup.cpp" />
+    <ClCompile Include="src\Graphics\Cleanup\ReinkanDeferredLightingCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanParallaxOcclusionCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanPostCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanShadowCleanup.cpp" />
@@ -213,8 +230,10 @@
     <ClCompile Include="src\Graphics\ClusterdShading\ReinkanClusteredShading.cpp" />
     <ClCompile Include="src\Graphics\DebugUI\ReinkanUI.cpp" />
     <ClCompile Include="src\Graphics\DebugPipelineResources\ReinkanDebug.cpp" />
+    <ClCompile Include="src\Graphics\DeferredLighting\ReinkanDeferredLighting.cpp" />
     <ClCompile Include="src\Graphics\Descriptor\DescriptorWrap.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanCleanup.cpp" />
+    <ClCompile Include="src\Graphics\Draw\ReinkanRecordDeferredLight.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordVLight.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordCompute.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordPostProcessing.cpp" />

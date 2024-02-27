@@ -21,6 +21,7 @@
 #include <glm/mat4x4.hpp>
 
 #include <iostream>
+#include <map>
 
 #include "Graphics/Constant/CoreConstant.h"
 #include "Graphics/Structure/InitializationStruct.h"
@@ -100,6 +101,8 @@ namespace Reinkan::Graphics
 
     // ReinkanLightUtility.cpp
         void AppendLight(const LightObject& lightObject);
+
+        void AppendLightMesh(const ModelData& modelData);
 
     // ReinkanParallaxOcclusion.cpp
         void AddPyramidalPath(std::string const& path);
@@ -251,7 +254,7 @@ namespace Reinkan::Graphics
         uint32_t appCurrentFrame = 0;
 
     // ReinkanRecordScanline.cpp
-        void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+        void RecordScanline(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
     // ReinkanRecordCompute.cpp
         void RecordComputeCommandBuffer(VkCommandBuffer commandBuffer, 
@@ -417,7 +420,7 @@ namespace Reinkan::Graphics
 
         void CreateScanlineFrameBuffers();
 
-        void CreateScanlineDepthMap();
+        //void CreateScanlineDepthMap();
 
         void CreatePostDescriptorSetWrap();
 
@@ -431,7 +434,7 @@ namespace Reinkan::Graphics
         VkPipelineLayout                appPostPipelineLayout;
 
         std::vector<VkFramebuffer>      appScanlineFrameBuffers;
-        std::vector<ImageWrap>          appScanlineImageWrap;
+        std::vector<ImageWrap>          appScanlineImageWraps;
         std::vector<ImageWrap>          appScanlinePositionImageWraps;
         std::vector<ImageWrap>          appScanlineNormalImageWraps;
         std::vector<ImageWrap>          appScanlineSpecularImageWraps;
@@ -513,8 +516,8 @@ namespace Reinkan::Graphics
         #endif
 
         uint32_t    appDebugFlag{ 0x0 };
-        float       appDebugFloat{ 20.0f };
-        float       appDebugFloat2{ 0.1f };
+        float       appDebugFloat{ 0.5f };
+        float       appDebugFloat2{ 0.5f };
         float       appDebugFloat3{ 0.1f };
         int         appDebugInt{ 0 };
 
@@ -523,6 +526,8 @@ namespace Reinkan::Graphics
         bool        appImguiBool3{ false };
         bool        appImguiBool4{ false };
         bool        appImguiBool5{ false };
+        bool        appImguiBool6{ false };
+
 
     ////////////////////////////////////////
     //          Compute Shaders
@@ -658,6 +663,41 @@ namespace Reinkan::Graphics
 
         std::vector<std::string>        appPyramidalPaths;
         std::vector<ImageWrap>          appPyramidalImageWraps;
+
+    // -------- Deferred Lighting -------- //
+
+    // ReinkanDeferredLighting.cpp
+        void CreateDeferredLightingRenderPass();
+
+        void CreateDeferredLightFrameBuffers();
+
+        //static VkVertexInputBindingDescription GetDeferredLightBindingDescription();
+
+        //static std::array<VkVertexInputAttributeDescription, 2> GetDeferredLightAttributeDescriptions();
+
+        void CreateDeferredLightDescriptorSetWrap();
+
+        void CreateDeferredLightPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateDeferredLightResources();
+
+        void RecordDeferredLightPass(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+        void DestroyDeferredLightResources();
+
+        VkRenderPass                    appDeferredLightRenderPass;
+
+        std::vector<VkFramebuffer>      appDeferredLightFrameBuffers;
+
+        DescriptorWrap                  appDeferredLightDescriptorWrap;
+
+        VkPipeline                      appDeferredLightPipeline;
+        VkPipelineLayout                appDeferredLightPipelineLayout;
+
+        std::vector<ImageWrap>          appDeferredLightingRenderTargetImageWraps;
+
+        std::map<std::string, ObjectData> appLightMeshTypes;
+
 
     // -------- Volumetric Lighting -------- //
 

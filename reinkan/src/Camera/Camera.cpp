@@ -5,10 +5,10 @@
 
 namespace Reinkan::Camera
 {
-	Camera::Camera() : position(glm::vec3(-3.0,2.0,-2.0)),
+	Camera::Camera() : position(glm::vec3(-3.1,0.5,-1.8)),
 					    //spin(-1.5707963268f), // -PI / 2.0
-						spin(-2.5f),
-					    tilt(0.5f), 
+						spin(-2.8f),
+					    tilt(0.25f), 
 						//tilt(1.57f),
 						fieldOfView(45.0),
 					    pFront(0.1f),
@@ -75,6 +75,11 @@ namespace Reinkan::Camera
 	glm::vec3 Camera::GetPosition() const
 	{
 		return position;
+	}
+
+	void Camera::SetPosition(glm::vec3 position)
+	{
+		this->position = position;
 	}
 
 	glm::mat4 Camera::GetPerspectiveMatrix() const

@@ -39,6 +39,8 @@ namespace Reinkan::Camera
 
 		glm::vec3 GetPosition() const;
 
+		void SetPosition(glm::vec3 position);
+
 		glm::mat4 GetPerspectiveMatrix() const;
 
 		glm::mat4 GetViewMatrix() const;

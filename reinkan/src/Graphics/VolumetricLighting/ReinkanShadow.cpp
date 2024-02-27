@@ -147,7 +147,7 @@ namespace Reinkan::Graphics
         rasterizer.rasterizerDiscardEnable = VK_FALSE;
         rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
         rasterizer.lineWidth = 1.0f;
-        rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+        rasterizer.cullMode = VK_CULL_MODE_FRONT_BIT;
         rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -256,7 +256,10 @@ namespace Reinkan::Graphics
 
         ubo.view = glm::lookAt(appGlobalLightPosition, appGlobalLightPosition + appGlobalLightDirection, glm::vec3(0.0, 1.0, 0.0));
         ubo.viewInverse = glm::inverse(ubo.view);
-        glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(appDebugFloat), static_cast<float>(appShadowMapWidth) / appShadowMapHeight, 0.1f, 1000.0f);
+
+        float fovy = 45.0f;
+
+        glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(fovy), static_cast<float>(appShadowMapWidth) / appShadowMapHeight, 0.1f, 1000.0f);
         perspectiveMatrix[1][1] *= -1;
 
         ubo.proj = perspectiveMatrix;

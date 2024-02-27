@@ -40,6 +40,8 @@ namespace Reinkan::Graphics
 
 		CreateVLightingRenderPass();
 
+		CreateDeferredLightingRenderPass();
+
 		// MultiSampling
 		CreateSwapchainColorResources();
 
@@ -59,65 +61,62 @@ namespace Reinkan::Graphics
 
 		CreateVLightFrameBuffers();
 
+		CreateDeferredLightFrameBuffers();
+
 		// Resources Binding will happen after this point
 	}
 
 	void ReinkanApp::BindResources()
 	{
+		BindModelData();
 
-		{
-			BindModelData();
+		BindMaterials();
 
-			BindMaterials();
+		BindTextures();
 
-			BindTextures();
+		// Default Viewport UBO - Projection and View Matrix
+		CreateScanlineUBO();
 
-			// Default Viewport UBO - Projection and View Matrix
-			CreateScanlineUBO();
+		// Global Light
+		CreateComputeClusteredGlobalLights();
 
-			// Clustered
-			CreateComputeClusteredBufferWraps(16, 9, 32, 0.1, 1000.0);
+		// Shadow
+		CreateShadowDescriptorSetWrap();
 
-			CreateComputeClusteredDescriptorSetWrap();
+		CreateShadowPipeline(appShadowDescriptorWrap);
 
-			CreateClusteredGridPipeline(appClusteredGridDescriptorWrap);
+		// Volumic Light Shaft
+		CreateVLightDescriptorSetWrap();
 
-			CreateClusteredCullLightPipeline(appClusteredCullLightDescriptorWrap);
+		CreateVLightPipeline(appVLightDescriptorWrap);
 
-			CreateComputeClusteredSyncObjects();
+		// Scanline
+		CreateScanlineDescriptorWrap();
 
-			// Shadow
-			CreateShadowDescriptorSetWrap();
+		CreateScanlinePipeline(appScanlineDescriptorWrap);
 
-			CreateShadowPipeline(appShadowDescriptorWrap);
+		// Deferred Lightinh
+		CreateDeferredLightDescriptorSetWrap();
 
-			// Volumic Light Shaft
-			CreateVLightDescriptorSetWrap();
+		CreateDeferredLightPipeline(appDeferredLightDescriptorWrap);
 
-			CreateVLightPipeline(appVLightDescriptorWrap);
+		// Post Processing
+		CreatePostDescriptorSetWrap();
 
-			// Scanline
-			CreateScanlineDescriptorWrap();
+		CreatePostPipeline(appPostDescriptorWrap);
 
-			CreateScanlinePipeline(appScanlineDescriptorWrap);
+		// Debug
+		CreateDebugBufferWraps();
 
-			// Post Processing
-			CreatePostDescriptorSetWrap();
+		CreateDebugDescriptorSetWrap();
 
-			CreatePostPipeline(appPostDescriptorWrap);
+		CreateDebugPipeline(appDebugDescriptorWrap, 
+							VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+							VK_POLYGON_MODE_LINE,
+							1.0f);
 
-			// Debug
-			CreateDebugBufferWraps();
-
-			CreateDebugDescriptorSetWrap();
-
-			CreateDebugPipeline(appDebugDescriptorWrap, 
-								VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-								VK_POLYGON_MODE_LINE,
-								1.0f);
-
-			std::printf("\n=============================== END OF BIND RESOURCES ===============================\n\n");
-		}
+		std::printf("\n=============================== END OF BIND RESOURCES ===============================\n\n");
+		
 	}
 
 	bool ReinkanApp::ShouldClose()

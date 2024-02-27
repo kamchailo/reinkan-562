@@ -15,7 +15,8 @@ namespace Reinkan
 		glm::vec2	texCoord;
 	};
 
-	struct UniformBufferObject {
+	struct UniformBufferObject 
+	{
 		alignas(16) glm::mat4 model;
 		alignas(16) glm::mat4 view;
 		alignas(16) glm::mat4 viewInverse;
@@ -61,9 +62,21 @@ namespace Reinkan
 		alignas(8) glm::vec2 shadowMapExtent;
 	};
 
+	struct PushConstantDeferredLight
+	{
+		alignas(16) glm::vec4 DeferredLightConstant;
+		alignas(16) glm::vec4 cameraPosition;
+		alignas(8) glm::vec2 shadowMapExtent;
+		alignas(8) glm::vec2 screenExtent;
+		alignas(4) float debugFloat;
+		alignas(4) float debugFloat2;
+	};
+
 	struct PushConstantPost
 	{
 		alignas(8) glm::vec2 screenExtent;
+		alignas(16) glm::vec4 globalLightPosition;
+		alignas(16) glm::vec4 cameraPosition;
 		alignas(4) uint32_t debugFlag;
 		alignas(4) float debugFloat;
 		alignas(4) float debugFloat2;

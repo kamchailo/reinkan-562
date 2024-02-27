@@ -177,22 +177,45 @@ namespace Reinkan::Graphics
         CreateScanlineFrameBuffers();
         // Recreate VLight FrameBuffers
         CreateVLightFrameBuffers();
+        // Recreate DeferredLight FrameBuffers
+        CreateDeferredLightFrameBuffers();
 
         // Rebind Descriptor for Scanline
-        appScanlineDescriptorWrap.Write(appDevice, 8, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appScanlineDescriptorWrap.Write(appDevice, 4, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
 
         // Rebind Descriptor for VLight
         appVLightDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
         appVLightDescriptorWrap.Write(appDevice, 2, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
 
-        // Rebind Descriptor for Post Processing
-        appPostDescriptorWrap.Write(appDevice, 0, appScanlineImageWrap, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 2, appVLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 3, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 4, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appPostDescriptorWrap.Write(appDevice, 5, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Rebind Descriptor for DeferredLight
+        uint32_t bindingIndex = 0;
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineUBO);
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
 
+        // 3 - Light Objects
+        if (appLightObjects.size() > 0)
+        {
+            appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appClusteredGlobalLights.buffer, MAX_FRAMES_IN_FLIGHT);
+        }
+
+        // Color Attachment
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Position Attachment
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Normal Attachment
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Specular Attachment
+        appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
+
+        // Rebind Descriptor for Post Processing
+        bindingIndex = 0;
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appVLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appDeferredLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
     }
 
     void ReinkanApp::CleanupSwapchain()
@@ -216,7 +239,7 @@ namespace Reinkan::Graphics
         for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
         {
             // Scanline ImageWrap
-            appScanlineImageWrap[i].Destroy(appDevice);
+            appScanlineImageWraps[i].Destroy(appDevice);
 
             // ScanlinePosition ImageWrap
             appScanlinePositionImageWraps[i].Destroy(appDevice);
@@ -237,13 +260,18 @@ namespace Reinkan::Graphics
             // VLight
             appVLightingRenderTargetImageWraps[i].Destroy(appDevice);
             vkDestroyFramebuffer(appDevice, appVLightFrameBuffers[i], nullptr);
+
+            // DeferredLight
+            appDeferredLightingRenderTargetImageWraps[i].Destroy(appDevice);
+            vkDestroyFramebuffer(appDevice, appDeferredLightFrameBuffers[i], nullptr);
         }
 
-        appScanlineImageWrap.clear();
+        appScanlineImageWraps.clear();
         appScanlinePositionImageWraps.clear();
         appScanlineNormalImageWraps.clear();
         appScanlineSpecularImageWraps.clear();
         appShadowMapImageWraps.clear();
         appVLightingRenderTargetImageWraps.clear();
+        appDeferredLightingRenderTargetImageWraps.clear();
     }
 }

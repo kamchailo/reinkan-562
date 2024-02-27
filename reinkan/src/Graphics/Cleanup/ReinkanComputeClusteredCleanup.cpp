@@ -10,10 +10,7 @@ namespace Reinkan::Graphics
         appClusteredCullLightDescriptorWrap.Destroy(appDevice);
 
         appClusteredPlanes.Destroy(appDevice);
-        appClusteredGlobalLights.Destroy(appDevice);
-
-        appClusteredGlobalLights_DEBUG.Destroy(appDevice);
-
+        
         appClusteredGrids.Destroy(appDevice);
         
         for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)

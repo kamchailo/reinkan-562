@@ -527,6 +527,7 @@ namespace Reinkan::Graphics
         bool        appImguiBool4{ false };
         bool        appImguiBool5{ false };
         bool        appImguiBool6{ false };
+        bool        appImguiBool7{ true };
 
 
     ////////////////////////////////////////

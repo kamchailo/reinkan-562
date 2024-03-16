@@ -230,10 +230,11 @@ namespace Reinkan::Graphics
 
         vkDestroyShaderModule(appDevice, fragShaderModule, nullptr);
         vkDestroyShaderModule(appDevice, vertShaderModule, nullptr);
+
 	}
 
-	void ReinkanApp::CreateShadowResources(size_t width, size_t height)
-	{
+    void ReinkanApp::CreateShadowResources(size_t width, size_t height)
+    {
         appShadowMapWidth = width;
         appShadowMapHeight = height;
 
@@ -248,7 +249,128 @@ namespace Reinkan::Graphics
                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
             vkMapMemory(appDevice, appShadowUBO[i].memory, 0, bufferSize, 0, &appShadowUBOMapped[i]);
         }
-	}
+    }
+
+    void ReinkanApp::CreateShadowBlurDescriptorSetWrap()
+    {
+        std::vector<VkDescriptorSetLayoutBinding> bindingTable;
+        uint32_t bindingIndex = 0;
+        // UBO
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                  bindingIndex++,                                                   // binding;
+                                  VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,                                // descriptorType;
+                                  1,                                                                // descriptorCount; 
+                                  VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT });     // stageFlags;
+
+        /*
+        * 
+        * Binding Resources
+        * - Gaussian Blur Array
+        * - Source Images
+        * - Destination Images
+        *   
+        */
+
+
+
+        appShadowBlurDescriptorWrap.SetBindings(appDevice, bindingTable, MAX_FRAMES_IN_FLIGHT);
+
+        bindingIndex = 0;
+        appShadowBlurDescriptorWrap.Write(appDevice, bindingIndex++, appShadowBlurUBO);
+    }
+
+    void ReinkanApp::CreateShadowBlurPipeline(DescriptorWrap descriptorWrap)
+    {
+        auto computeShaderCode = ReadFile("../shaders/shadowBlurHorizontal.comp.spv");
+
+        VkShaderModule computeShaderModule = CreateShaderModule(computeShaderCode);
+
+        VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
+        computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        computeShaderStageInfo.module = computeShaderModule;
+        computeShaderStageInfo.pName = "main";
+
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 1;
+        pipelineLayoutInfo.pSetLayouts = &descriptorWrap.descriptorSetLayout;
+
+        if (vkCreatePipelineLayout(appDevice, &pipelineLayoutInfo, nullptr, &appShadowBlurPipelineLayout) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create compute pipeline layout!");
+        }
+
+        VkComputePipelineCreateInfo pipelineInfo{};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineInfo.layout = appShadowBlurPipelineLayout;
+        pipelineInfo.stage = computeShaderStageInfo;
+
+        if (vkCreateComputePipelines(appDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &appShadowBlurPipeline) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create compute pipeline!");
+        }
+
+        vkDestroyShaderModule(appDevice, computeShaderModule, nullptr);
+    }
+
+    void ReinkanApp::CreateShadowBlurResources()
+    {
+        // UBO [MAX_FRAMES_IN_FLIGHT]
+        VkDeviceSize bufferSize = sizeof(ShadowUniformBufferObject);
+        appShadowBlurUBO.resize(MAX_FRAMES_IN_FLIGHT);
+        appShadowBlurUBOMapped.resize(MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+        {
+            appShadowBlurUBO[i] = CreateBufferWrap(bufferSize,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+            vkMapMemory(appDevice, appShadowBlurUBO[i].memory, 0, bufferSize, 0, &appShadowBlurUBOMapped[i]);
+        }
+    }
+
+    void ReinkanApp::CreateShadowCommandBuffer()
+    {
+        appShadowCommandBuffer.resize(MAX_FRAMES_IN_FLIGHT);
+
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.commandPool = appCommandPool;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount = (uint32_t)appShadowCommandBuffer.size();
+
+        if (vkAllocateCommandBuffers(appDevice, &allocInfo, appShadowCommandBuffer.data()) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to allocate compute command buffers!");
+        }
+    }
+
+    void ReinkanApp::CreateShadowSyncObjects()
+    {
+        appPreComputeFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+        appComputeShadowBlurFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+        appRenderShadowFences.resize(MAX_FRAMES_IN_FLIGHT);
+        appComputeShadowBlurFences.resize(MAX_FRAMES_IN_FLIGHT);
+
+        VkSemaphoreCreateInfo semaphoreInfo{};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            if (vkCreateSemaphore(appDevice, &semaphoreInfo, nullptr, &appPreComputeFinishedSemaphores[i]) != VK_SUCCESS ||
+                vkCreateSemaphore(appDevice, &semaphoreInfo, nullptr, &appComputeShadowBlurFinishedSemaphores[i]) != VK_SUCCESS ||
+                vkCreateFence(appDevice, &fenceInfo, nullptr, &appRenderShadowFences[i]) != VK_SUCCESS ||
+                vkCreateFence(appDevice, &fenceInfo, nullptr, &appComputeShadowBlurFences[i]) != VK_SUCCESS)
+            {
+
+                throw std::runtime_error("failed to create synchronization objects for a frame!");
+            }
+        }
+    }
 
     void ReinkanApp::UpdateShadowUBO(uint32_t currentImage)
     {
@@ -275,6 +397,16 @@ namespace Reinkan::Graphics
 
         // CPU to update buffer req: VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
         memcpy(appShadowUBOMapped[currentImage], &ubo, sizeof(ubo));
+    }
+
+    void ReinkanApp::UpdateShadowBlurUBO(uint32_t currentImage)
+    {
+        ShadowBlurUniformBufferObject ubo{};
+
+        ubo.blurWidth = glm::vec2(100, 100);
+
+        // CPU to update buffer req: VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+        memcpy(appShadowBlurUBOMapped[currentImage], &ubo, sizeof(ubo));
     }
 
 }

@@ -46,6 +46,10 @@ namespace Reinkan
 		alignas(8) glm::vec2 screenExtent;
 	};
 
+	struct ShadowBlurUniformBufferObject {
+		alignas(8) glm::vec2 blurWidth;
+	};
+
 	struct PushConstantShadow
 	{
 		alignas(16) glm::mat4 modelMatrix;

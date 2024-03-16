@@ -4,6 +4,8 @@ C:/VulkanSDK/1.3.231.1/Bin/glslc.exe shader.frag -o shader.frag.spv
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe shadow.vert -o shadow.vert.spv
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe shadow.frag -o shadow.frag.spv
 
+C:/VulkanSDK/1.3.231.1/Bin/glslc.exe shadowBlurHorizontal.comp -o shadowBlurHorizontal.comp.spv
+
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe vlight.vert -o vlight.vert.spv
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe vlight.frag -o vlight.frag.spv
 

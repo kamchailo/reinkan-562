@@ -236,17 +236,18 @@ namespace Reinkan::Graphics
 
         void EndTempCommandBuffer(VkCommandBuffer commandBuffer); // should be change to dedicated Command Buffer for Buffer Initialization
 
-        VkCommandPool                appCommandPool;
-        std::vector<VkCommandBuffer> appCommandBuffers;
+        VkCommandPool                   appCommandPool;
+        std::vector<VkCommandBuffer>    appCommandBuffers;
 
-        VkCommandPool appComputeCommandPool;
+        VkCommandPool                   appComputeCommandPool;
+        std::vector<VkCommandBuffer>    appComputeCommandBuffers;
 
     // ReinkanSyncObjects.cpp
         void CreateSyncObjects();
 
-        std::vector<VkSemaphore>    imageAvailableSemaphores;
-        std::vector<VkSemaphore>    renderFinishedSemaphores;
-        std::vector<VkFence>        inFlightFences;
+        std::vector<VkSemaphore>        imageAvailableSemaphores;
+        std::vector<VkSemaphore>        renderFinishedSemaphores;
+        std::vector<VkFence>            inFlightFences;
 
     // ReinkanDrawFrame.cpp
         void DrawFrame();
@@ -748,7 +749,19 @@ namespace Reinkan::Graphics
 
         void CreateShadowResources(size_t width, size_t height);
 
+        void CreateShadowBlurDescriptorSetWrap();
+
+        void CreateShadowBlurPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateShadowBlurResources();
+
+        void CreateShadowCommandBuffer();
+
+        void CreateShadowSyncObjects();
+
         void UpdateShadowUBO(uint32_t currentImage);
+
+        void UpdateShadowBlurUBO(uint32_t currentImage);
 
         void RecordShadowPass(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
@@ -760,21 +773,34 @@ namespace Reinkan::Graphics
 
         std::vector<ImageWrap>          appShadowMapImageWraps;
 
+        DescriptorWrap                  appShadowDescriptorWrap;
         VkPipeline                      appShadowPipeline;
         VkPipelineLayout                appShadowPipelineLayout;
+
+        DescriptorWrap                  appShadowBlurDescriptorWrap;
+        VkPipeline                      appShadowBlurPipeline;
+        VkPipelineLayout                appShadowBlurPipelineLayout;
 
         size_t                          appShadowMapWidth;
         size_t                          appShadowMapHeight;
 
         glm::vec3                       appGlobalLightPosition{ 8.0, 8.0, 1.0 };
         glm::vec3                       appGlobalLightDirection{ -0.704361, -0.704361, -0.0880451 };
-        //glm::vec3                       appGlobalLightPosition{ 0.0, 8.0, 0.0 };
-        //glm::vec3                       appGlobalLightDirection{ 0.0, -0.7, 0.0 };
-
         glm::mat4                       appShadowProjectionViewMatrix;
 
-        DescriptorWrap                  appShadowDescriptorWrap;
         std::vector<BufferWrap>         appShadowUBO;
         std::vector<void*>              appShadowUBOMapped; // Address to Buffer | HOST_VISIBLE
+
+        std::vector<BufferWrap>         appShadowBlurUBO;
+        std::vector<void*>              appShadowBlurUBOMapped; // Address to Buffer | HOST_VISIBLE
+
+        std::vector<VkCommandBuffer>    appShadowCommandBuffer; // Command Buffer on Graphics Queue
+
+        // Semaphores for Shadow Pass
+        std::vector<VkSemaphore>        appPreComputeFinishedSemaphores;
+        std::vector<VkFence>            appRenderShadowFences;
+        // Semaphores for Shadow Compute -- Convolution Blur
+        std::vector<VkSemaphore>        appComputeShadowBlurFinishedSemaphores;
+        std::vector<VkFence>            appComputeShadowBlurFences;
     };
 }

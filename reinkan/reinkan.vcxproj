@@ -252,7 +252,7 @@ call "compile.bat"</Command>
     <ClCompile Include="src\Graphics\Pipeline\ReinkanComputeParticlePipeline.cpp" />
     <ClCompile Include="src\Graphics\Pipeline\ReinkanDebugPipeline.cpp" />
     <ClCompile Include="src\Graphics\Pipeline\ReinkanPipelineUtility.cpp" />
-    <ClCompile Include="src\Graphics\VolumetricLighting\ReinkanShadow.cpp" />
+    <ClCompile Include="src\Graphics\Shadow\ReinkanShadow.cpp" />
     <ClCompile Include="src\Graphics\PostProcessing\ReinkanPostProcessing.cpp" />
     <ClCompile Include="src\Graphics\VolumetricLighting\ReinkanVolumetricLighting.cpp" />
     <ClCompile Include="src\Input\InputSystem.cpp" />

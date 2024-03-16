@@ -50,6 +50,12 @@ namespace Reinkan::Graphics
 		// Shadow
 		CreateShadowResources(1024, 1024);
 
+		CreateShadowBlurResources();
+
+		CreateShadowCommandBuffer();
+
+		CreateShadowSyncObjects();
+
 		// From VolumicLighting
 		CreateVLightResources(appShadowMapWidth, appShadowMapHeight);
 
@@ -84,6 +90,11 @@ namespace Reinkan::Graphics
 		CreateShadowDescriptorSetWrap();
 
 		CreateShadowPipeline(appShadowDescriptorWrap);
+
+		// Shadow Blur
+		CreateShadowBlurDescriptorSetWrap();
+
+		CreateShadowBlurPipeline(appShadowBlurDescriptorWrap);
 
 		// Volumic Light Shaft
 		CreateVLightDescriptorSetWrap();

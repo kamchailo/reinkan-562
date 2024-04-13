@@ -94,7 +94,8 @@ namespace Reinkan::Graphics
 		// Shadow Blur
 		CreateShadowBlurDescriptorSetWrap();
 
-		CreateShadowBlurPipeline(appShadowBlurDescriptorWrap);
+		CreateShadowBlurHorizontalPipeline(appShadowBlurDescriptorWrap);
+		CreateShadowBlurVerticalPipeline(appShadowBlurDescriptorWrap);
 
 		// Volumic Light Shaft
 		CreateVLightDescriptorSetWrap();
@@ -125,6 +126,9 @@ namespace Reinkan::Graphics
 							VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 							VK_POLYGON_MODE_LINE,
 							1.0f);
+
+		// Dummy Pipeline
+		CreateDummyComputePipeline(100, 100);
 
 		std::printf("\n=============================== END OF BIND RESOURCES ===============================\n\n");
 		

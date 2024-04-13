@@ -54,11 +54,10 @@ namespace Reinkan::Graphics
         ////////////////////////////////////////
         //          Pre Compute -- Shadow Pass
         ////////////////////////////////////////
-
         vkWaitForFences(appDevice, 1, &appRenderShadowFences[appCurrentFrame], VK_TRUE, UINT64_MAX);
 
         UpdateShadowUBO(appCurrentFrame); // Update shadow first for appShadowProjectionViewMatrix
-
+        
         vkResetFences(appDevice, 1, &appRenderShadowFences[appCurrentFrame]);
 
         vkResetCommandBuffer(appShadowCommandBuffer[appCurrentFrame], 0);
@@ -71,6 +70,7 @@ namespace Reinkan::Graphics
         // --------------------
         {
             RecordShadowPass(appShadowCommandBuffer[appCurrentFrame], appCurrentFrame);
+            
         }
         if (vkEndCommandBuffer(appShadowCommandBuffer[appCurrentFrame]) != VK_SUCCESS)
         { throw std::runtime_error("failed to record command buffer!"); }
@@ -89,39 +89,63 @@ namespace Reinkan::Graphics
         submitPreComputeInfo.pSignalSemaphores = preComputeSignalSemaphores;
         if (vkQueueSubmit(appGraphicsQueue, 1, &submitPreComputeInfo, appRenderShadowFences[appCurrentFrame]) != VK_SUCCESS)
         { throw std::runtime_error("failed to submit compute command buffer!"); };
-
+        
         ////////////////////////////////////////
         //          Compute Dispatch
         ////////////////////////////////////////
-        
         vkWaitForFences(appDevice, 1, &appComputeShadowBlurFences[appCurrentFrame], VK_TRUE, UINT64_MAX);
 
         // Upload CPU resources
         UpdateShadowBlurUBO(appCurrentFrame);
-
         vkResetFences(appDevice, 1, &appComputeShadowBlurFences[appCurrentFrame]);
 
         vkResetCommandBuffer(appComputeCommandBuffers[appCurrentFrame], 0);
+
         VkCommandBufferBeginInfo beginComputeInfo{};
         beginComputeInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         if (vkBeginCommandBuffer(appComputeCommandBuffers[appCurrentFrame], &beginComputeInfo) != VK_SUCCESS)
         { throw std::runtime_error("failed to begin recording command buffer!"); }
+        
         // --------------------
         // Compute . . .
         // --------------------
         {
-            //RecordComputeCommandBuffer()
+            // Horizontal Shadow Blur Compute Dispatch
+            RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
+                                       appShadowBlurHorizontalPipeline,
+                                       appShadowBlurHorizontalPipelineLayout,
+                                       appShadowBlurDescriptorWrap,
+                                       appShadowMapWidth / 128, appShadowMapHeight, 1,
+                                       true);
+            
+            CmdCopyImage(appComputeCommandBuffers[appCurrentFrame], 
+                         appBlurShadowMapImageWraps[appCurrentFrame], 
+                         appShadowMapImageWraps[appCurrentFrame],
+                         appShadowMapWidth,
+                         appShadowMapHeight); 
+            
+            // Vertical Shadow Blur Compute Dispatch
+            RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
+                                       appShadowBlurVerticalPipeline,
+                                       appShadowBlurVerticalPipelineLayout,
+                                       appShadowBlurDescriptorWrap,
+                                       appShadowMapWidth, appShadowMapHeight / 128, 1,
+                                       false);
+            
+            // IBL Compute Dispatch
         }
+        
         if (vkEndCommandBuffer(appComputeCommandBuffers[appCurrentFrame]) != VK_SUCCESS)
         { throw std::runtime_error("failed to record command buffer!"); }
+        
 
         VkSemaphore computeWaitSemaphores[] = { appPreComputeFinishedSemaphores[appCurrentFrame] };
         VkSemaphore computeSignalSemaphores[] = { appComputeShadowBlurFinishedSemaphores[appCurrentFrame] };
-        VkPipelineStageFlags computeWaitStages[] = { VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT };
+        VkPipelineStageFlags computeWaitStages[] = { VK_PIPELINE_STAGE_TRANSFER_BIT };
 
         VkSubmitInfo submitComputeInfo{};
         submitComputeInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        //submitComputeInfo.pNext;
+        submitComputeInfo.pNext;
         submitComputeInfo.waitSemaphoreCount = 1;
         submitComputeInfo.pWaitSemaphores = computeWaitSemaphores;
         submitComputeInfo.pWaitDstStageMask = computeWaitStages;
@@ -132,6 +156,7 @@ namespace Reinkan::Graphics
         if (vkQueueSubmit(appComputeQueue, 1, &submitComputeInfo, appComputeShadowBlurFences[appCurrentFrame]) != VK_SUCCESS)
         { throw std::runtime_error("failed to submit compute command buffer!"); };
         
+
         ////////////////////////////////////////
         //          Graphics Draw
         ////////////////////////////////////////
@@ -140,6 +165,7 @@ namespace Reinkan::Graphics
         // Update Value per frame
         // --------------------
         UpdateScanlineUBO(appCurrentFrame);
+        UpdateShadowUBO(appCurrentFrame); // Update shadow first for appShadowProjectionViewMatrix
 
         // Only reset the fence if we are submitting work
         // [WAIT] inFlightFences[appCurrentFrame] or [UNSIGNAL]
@@ -153,6 +179,7 @@ namespace Reinkan::Graphics
         if (vkBeginCommandBuffer(appCommandBuffers[appCurrentFrame], &beginInfo) != VK_SUCCESS)
         { throw std::runtime_error("failed to begin recording command buffer!"); }
         {
+            // RecordShadowPass move to pre compute
             //RecordShadowPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
             RecordScanline(appCommandBuffers[appCurrentFrame], appCurrentFrame);
@@ -173,8 +200,11 @@ namespace Reinkan::Graphics
 
         VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[appCurrentFrame] };
         VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[appCurrentFrame]
-                                        , appComputeShadowBlurFinishedSemaphores[appCurrentFrame] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT };
+                                        ,appComputeShadowBlurFinishedSemaphores[appCurrentFrame]
+                                       };
+        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+                                            ,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+                                        };
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

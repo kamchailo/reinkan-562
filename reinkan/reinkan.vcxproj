@@ -239,6 +239,7 @@ call "compile.bat"</Command>
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordPostProcessing.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordScanline.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordShadow.cpp" />
+    <ClCompile Include="src\Graphics\DummyPipeline\ReinkanDummyPipeline.cpp" />
     <ClCompile Include="src\Graphics\GraphicsSystem.cpp" />
     <ClCompile Include="src\Graphics\Initializer\ReinkanCommandBuffer.cpp" />
     <ClCompile Include="src\Graphics\Draw\ReinkanDrawFrame.cpp" />
@@ -259,7 +260,7 @@ call "compile.bat"</Command>
     <ClCompile Include="src\Core\ReinkanEngine.cpp" />
     <ClCompile Include="src\Graphics\ResourceLoader\ReinkanModelLoader.cpp" />
     <ClCompile Include="src\Graphics\FrameBuffers\ReinkanFrameBuffers.cpp" />
-    <ClCompile Include="src\Graphics\ScanlineRenderPass\ReinkanScanlineRenderPass.cpp" />
+    <ClCompile Include="src\Graphics\ScanlineRenderPass\ReinkanScanline.cpp" />
     <ClCompile Include="src\Graphics\Pipeline\ReinkanScanlinePipeline.cpp" />
     <ClCompile Include="src\Graphics\Initializer\ReinkanInstance.cpp" />
     <ClCompile Include="src\Graphics\Initializer\ReinkanDevice.cpp" />

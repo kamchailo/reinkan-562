@@ -134,7 +134,7 @@ namespace Reinkan::Graphics
             descriptorWrite.dstSet = this->descriptorSets[i];
             descriptorWrite.dstBinding = index;
             descriptorWrite.dstArrayElement = 0;
-            descriptorWrite.descriptorCount = 1;
+            descriptorWrite.descriptorCount = bindingTable[index].descriptorCount;
             descriptorWrite.descriptorType = bindingTable[index].descriptorType;
             descriptorWrite.pBufferInfo = &bufferInfo;
 

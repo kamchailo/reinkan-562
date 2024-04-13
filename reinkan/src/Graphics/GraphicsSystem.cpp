@@ -38,7 +38,7 @@ namespace Reinkan::Graphics
 
             modelTr = glm::scale(modelTr, glm::vec3(0.3));
             modelTr = glm::rotate(modelTr, 0.5f, glm::vec3(0, 1, 0));
-            modelTr = glm::translate(modelTr, glm::vec3(0.0f, 2.0f, 0.0f));
+            modelTr = glm::translate(modelTr, glm::vec3(0.0f, 1.0f, 0.0f));
 
             
             ReadAssimpFile("../assets/models/simpleShapesIco.obj",
@@ -72,7 +72,7 @@ namespace Reinkan::Graphics
             
             float space = 0.025f;
 
-            int width = 200;
+            int width = 2;
             
             float colorOffset = (1.0f / width);
 

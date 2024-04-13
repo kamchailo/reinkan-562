@@ -265,7 +265,7 @@ namespace Reinkan::Graphics
                                         uint32_t dispatchCountX, 
                                         uint32_t dispatchCountY, 
                                         uint32_t dispatchCountZ,
-                                        bool isMemBarrier);
+                                        bool isMemBarrier = false);
 
     ////////////////////////////////////////
     //      Resources Binding
@@ -374,6 +374,22 @@ namespace Reinkan::Graphics
                            int32_t texWidth, 
                            int32_t texHeight, 
                            uint32_t mipLevels);
+
+        void CmdCopyImage(VkCommandBuffer commandBuffer, 
+                        ImageWrap& srcImage, 
+                        ImageWrap& dstImage,
+                        uint32_t imageWidth,
+                        uint32_t imageHeight);
+
+        void CmdImageLayoutBarrier(VkCommandBuffer commandBuffer,
+                                    VkImage image,
+                                    VkImageLayout oldImageLayout,
+                                    VkImageLayout newImageLayout,
+                                    VkImageAspectFlags aspectMask = VK_IMAGE_ASPECT_COLOR_BIT);
+
+        VkAccessFlags GetAccessFlagFromImageLayout(VkImageLayout layout);
+
+        VkPipelineStageFlags GetPipelineStageFromImageLayout(VkImageLayout layout);
 
     // ReinkanDepthBuffer.cpp
         void CreateSwapchainDepthResource();
@@ -519,7 +535,7 @@ namespace Reinkan::Graphics
         uint32_t    appDebugFlag{ 0x0 };
         float       appDebugFloat{ 0.5f };
         float       appDebugFloat2{ 0.5f };
-        float       appDebugFloat3{ 0.1f };
+        float       appDebugFloat3{ 30.0f };
         int         appDebugInt{ 0 };
 
         bool        appImguiBool1{ false };
@@ -751,7 +767,9 @@ namespace Reinkan::Graphics
 
         void CreateShadowBlurDescriptorSetWrap();
 
-        void CreateShadowBlurPipeline(DescriptorWrap descriptorWrap);
+        void CreateShadowBlurHorizontalPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateShadowBlurVerticalPipeline(DescriptorWrap descriptorWrap);
 
         void CreateShadowBlurResources();
 
@@ -773,13 +791,18 @@ namespace Reinkan::Graphics
 
         std::vector<ImageWrap>          appShadowMapImageWraps;
 
+        std::vector<ImageWrap>          appBlurShadowMapImageWraps;
+
         DescriptorWrap                  appShadowDescriptorWrap;
         VkPipeline                      appShadowPipeline;
         VkPipelineLayout                appShadowPipelineLayout;
 
         DescriptorWrap                  appShadowBlurDescriptorWrap;
-        VkPipeline                      appShadowBlurPipeline;
-        VkPipelineLayout                appShadowBlurPipelineLayout;
+        VkPipeline                      appShadowBlurHorizontalPipeline;
+        VkPipelineLayout                appShadowBlurHorizontalPipelineLayout;
+
+        VkPipeline                      appShadowBlurVerticalPipeline;
+        VkPipelineLayout                appShadowBlurVerticalPipelineLayout;
 
         size_t                          appShadowMapWidth;
         size_t                          appShadowMapHeight;
@@ -802,5 +825,39 @@ namespace Reinkan::Graphics
         // Semaphores for Shadow Compute -- Convolution Blur
         std::vector<VkSemaphore>        appComputeShadowBlurFinishedSemaphores;
         std::vector<VkFence>            appComputeShadowBlurFences;
+
+        std::vector<BufferWrap>         appShadowBlurBlocks;
+
+
+
+        /*
+        * 
+        * Try New Compute Pipeline
+        * 
+        */
+
+
+        void CreateDummyComputePipeline(uint32_t dummyWidth, uint32_t dummyHeight);
+
+        void RecordDummyCompute();
+        
+        void DestroyDummyResources();
+
+        DescriptorWrap                  appDummyDescriptorWrap;
+        VkPipeline                      appDummyPipeline;
+        VkPipelineLayout                appDummyPipelineLayout;
+           
+        std::vector<ImageWrap>          appDummyImageWraps;
+        std::vector<BufferWrap>         appDummyBuffer;
+
+        struct DummyData 
+        {
+            glm::vec4 position;
+            glm::vec4 color;
+            float value;
+        };
+
+        std::vector<DummyData>          appDummyData;
+
     };
 }

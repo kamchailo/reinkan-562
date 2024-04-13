@@ -15,6 +15,9 @@ namespace Reinkan::Graphics
             vkDestroyFence(appDevice, appRenderShadowFences[i], nullptr);
             vkDestroyFence(appDevice, appComputeShadowBlurFences[i], nullptr);
 
+            // only compute shader target does not need to recreate when resizing window
+            appBlurShadowMapImageWraps[i].Destroy(appDevice);
+
             // Move to clean up swapchain for frame resizing
             //appShadowMapImageWraps[i].Destroy(appDevice);
             //vkDestroyFramebuffer(appDevice, appShadowFrameBuffers[i], nullptr);
@@ -27,7 +30,9 @@ namespace Reinkan::Graphics
         vkDestroyRenderPass(appDevice, appShadowRenderPass, nullptr);
 
         appShadowBlurDescriptorWrap.Destroy(appDevice);
-        vkDestroyPipeline(appDevice, appShadowBlurPipeline, nullptr);
-        vkDestroyPipelineLayout(appDevice, appShadowBlurPipelineLayout, nullptr);
+        vkDestroyPipeline(appDevice, appShadowBlurHorizontalPipeline, nullptr);
+        vkDestroyPipelineLayout(appDevice, appShadowBlurHorizontalPipelineLayout, nullptr);
+        vkDestroyPipeline(appDevice, appShadowBlurVerticalPipeline, nullptr);
+        vkDestroyPipelineLayout(appDevice, appShadowBlurVerticalPipelineLayout, nullptr);
     }
 }

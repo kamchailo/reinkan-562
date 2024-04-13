@@ -133,7 +133,6 @@ namespace Reinkan::Graphics
         scissor.extent.width = appShadowMapWidth;
         scissor.extent.height = appShadowMapHeight;
 
-
         VkPipelineViewportStateCreateInfo viewportState{};
         viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportState.viewportCount = 1;
@@ -230,7 +229,6 @@ namespace Reinkan::Graphics
 
         vkDestroyShaderModule(appDevice, fragShaderModule, nullptr);
         vkDestroyShaderModule(appDevice, vertShaderModule, nullptr);
-
 	}
 
     void ReinkanApp::CreateShadowResources(size_t width, size_t height)
@@ -260,7 +258,21 @@ namespace Reinkan::Graphics
                                   bindingIndex++,                                                   // binding;
                                   VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,                                // descriptorType;
                                   1,                                                                // descriptorCount; 
-                                  VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT });     // stageFlags;
+                                  VK_SHADER_STAGE_COMPUTE_BIT });     // stageFlags;
+
+        // ShadowImageWrap
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                                               // binding;
+                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,                    // descriptorType;
+                                      2,                                         // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_COMPUTE_BIT });                              // stageFlags;
+
+        // appBlurShadowMapImageWraps
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                                               // binding;
+                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,                    // descriptorType;
+                                      2,                                         // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_COMPUTE_BIT });
 
         /*
         * 
@@ -271,15 +283,16 @@ namespace Reinkan::Graphics
         *   
         */
 
-
-
         appShadowBlurDescriptorWrap.SetBindings(appDevice, bindingTable, MAX_FRAMES_IN_FLIGHT);
 
         bindingIndex = 0;
         appShadowBlurDescriptorWrap.Write(appDevice, bindingIndex++, appShadowBlurUBO);
+        appShadowBlurDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appShadowBlurDescriptorWrap.Write(appDevice, bindingIndex++, appBlurShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        
     }
 
-    void ReinkanApp::CreateShadowBlurPipeline(DescriptorWrap descriptorWrap)
+    void ReinkanApp::CreateShadowBlurHorizontalPipeline(DescriptorWrap descriptorWrap)
     {
         auto computeShaderCode = ReadFile("../shaders/shadowBlurHorizontal.comp.spv");
 
@@ -296,17 +309,52 @@ namespace Reinkan::Graphics
         pipelineLayoutInfo.setLayoutCount = 1;
         pipelineLayoutInfo.pSetLayouts = &descriptorWrap.descriptorSetLayout;
 
-        if (vkCreatePipelineLayout(appDevice, &pipelineLayoutInfo, nullptr, &appShadowBlurPipelineLayout) != VK_SUCCESS)
+        if (vkCreatePipelineLayout(appDevice, &pipelineLayoutInfo, nullptr, &appShadowBlurHorizontalPipelineLayout) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create compute pipeline layout!");
         }
 
         VkComputePipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
-        pipelineInfo.layout = appShadowBlurPipelineLayout;
+        pipelineInfo.layout = appShadowBlurHorizontalPipelineLayout;
         pipelineInfo.stage = computeShaderStageInfo;
 
-        if (vkCreateComputePipelines(appDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &appShadowBlurPipeline) != VK_SUCCESS)
+        if (vkCreateComputePipelines(appDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &appShadowBlurHorizontalPipeline) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create compute pipeline!");
+        }
+
+        vkDestroyShaderModule(appDevice, computeShaderModule, nullptr);
+    }
+
+    void ReinkanApp::CreateShadowBlurVerticalPipeline(DescriptorWrap descriptorWrap)
+    {
+        auto computeShaderCode = ReadFile("../shaders/shadowBlurVertical.comp.spv");
+
+        VkShaderModule computeShaderModule = CreateShaderModule(computeShaderCode);
+
+        VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
+        computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        computeShaderStageInfo.module = computeShaderModule;
+        computeShaderStageInfo.pName = "main";
+
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 1;
+        pipelineLayoutInfo.pSetLayouts = &descriptorWrap.descriptorSetLayout;
+
+        if (vkCreatePipelineLayout(appDevice, &pipelineLayoutInfo, nullptr, &appShadowBlurVerticalPipelineLayout) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create compute pipeline layout!");
+        }
+
+        VkComputePipelineCreateInfo pipelineInfo{};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineInfo.layout = appShadowBlurVerticalPipelineLayout;
+        pipelineInfo.stage = computeShaderStageInfo;
+
+        if (vkCreateComputePipelines(appDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &appShadowBlurVerticalPipeline) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create compute pipeline!");
         }
@@ -317,7 +365,7 @@ namespace Reinkan::Graphics
     void ReinkanApp::CreateShadowBlurResources()
     {
         // UBO [MAX_FRAMES_IN_FLIGHT]
-        VkDeviceSize bufferSize = sizeof(ShadowUniformBufferObject);
+        VkDeviceSize bufferSize = sizeof(ShadowBlurUniformBufferObject);
         appShadowBlurUBO.resize(MAX_FRAMES_IN_FLIGHT);
         appShadowBlurUBOMapped.resize(MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
@@ -327,6 +375,36 @@ namespace Reinkan::Graphics
                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
             vkMapMemory(appDevice, appShadowBlurUBO[i].memory, 0, bufferSize, 0, &appShadowBlurUBOMapped[i]);
         }
+
+        // Blurred Shadow Map
+        appBlurShadowMapImageWraps.resize(MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+        {
+            appBlurShadowMapImageWraps[i] = CreateImageWrap(appShadowMapWidth,
+                appShadowMapHeight,
+                VK_FORMAT_R32G32B32A32_SFLOAT,                                           // Image Format
+                VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
+                VK_IMAGE_USAGE_TRANSFER_DST_BIT
+                | VK_IMAGE_USAGE_SAMPLED_BIT
+                | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+                | VK_IMAGE_USAGE_STORAGE_BIT
+                | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,                                   // Image Usage
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
+                1,
+                appMsaaSamples);
+
+            TransitionImageLayout(appBlurShadowMapImageWraps[i].image,
+                VK_FORMAT_R32G32B32A32_SFLOAT,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_GENERAL);
+
+            appBlurShadowMapImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+            appBlurShadowMapImageWraps[i].imageView = CreateImageView(appBlurShadowMapImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
+            
+            appBlurShadowMapImageWraps[i].sampler = CreateNearestImageSampler();
+        }
+
     }
 
     void ReinkanApp::CreateShadowCommandBuffer()
@@ -379,7 +457,7 @@ namespace Reinkan::Graphics
         ubo.view = glm::lookAt(appGlobalLightPosition, appGlobalLightPosition + appGlobalLightDirection, glm::vec3(0.0, 1.0, 0.0));
         ubo.viewInverse = glm::inverse(ubo.view);
 
-        float fovy = 45.0f;
+        float fovy = appDebugFloat3;
 
         glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(fovy), static_cast<float>(appShadowMapWidth) / appShadowMapHeight, 0.1f, 1000.0f);
         perspectiveMatrix[1][1] *= -1;
@@ -403,7 +481,9 @@ namespace Reinkan::Graphics
     {
         ShadowBlurUniformBufferObject ubo{};
 
-        ubo.blurWidth = glm::vec2(100, 100);
+        ubo.blurWidth = 100;
+        ubo.shadowWidth = appShadowMapWidth;
+        ubo.shadowHeight = appShadowMapHeight;
 
         // CPU to update buffer req: VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
         memcpy(appShadowBlurUBOMapped[currentImage], &ubo, sizeof(ubo));

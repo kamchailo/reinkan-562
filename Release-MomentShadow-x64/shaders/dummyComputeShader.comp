@@ -1,0 +1,36 @@
+#version 450
+
+#extension GL_EXT_nonuniform_qualifier : enable
+
+const int LOCAL_GROUP_SIZE_X = 100;
+layout(local_size_x = LOCAL_GROUP_SIZE_X, local_size_y = 1, local_size_z = 1) in;
+
+struct DummyData
+{
+    vec4 position;
+    vec4 color;
+    float value;
+};
+
+layout(std140, binding = 0) buffer dummyBufferBlock
+{
+    DummyData dummyBuffer[];
+};
+
+layout(set = 0, binding = 1, rgba32f) uniform image2D dummyImage;
+
+void main()
+{
+    ivec2 gpos = ivec2(gl_GlobalInvocationID.xy);  // Index of central pixel being blur
+
+    ivec2 lpos = ivec2(gl_LocalInvocationID.xy);
+
+    // imageStore(dummyImage, gpos, vec4(gpos.x, gpos.y, 0, 0));
+
+    dummyBuffer[lpos.x + lpos.y * 100].position = vec4(gpos.x, gpos.y, 1.2, 3.4);
+
+    dummyBuffer[0].value = 999.99;
+    dummyBuffer[1].value = 888.88;
+    dummyBuffer[2].value = 777.77;
+    dummyBuffer[3].value = 666.66;
+}

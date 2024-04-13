@@ -70,6 +70,7 @@ namespace Reinkan::Graphics
                 pushConstant.debugFlag = appDebugFlag;
                 pushConstant.debugFloat = appDebugFloat;
                 pushConstant.debugFloat2 = appDebugFloat2;
+                pushConstant.debugFloat3 = appDebugFloat3;
                 pushConstant.debugInt = appDebugInt;
 
                 vkCmdPushConstants(commandBuffer,

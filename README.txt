@@ -1,6 +1,6 @@
 # reinkan-562
 
-Project 1 : Deferred Shading
+Project 2 : Moment Shadow Map
 By Kamchai Loketkrawee
 
 To run:

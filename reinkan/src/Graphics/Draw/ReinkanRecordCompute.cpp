@@ -14,13 +14,6 @@ namespace Reinkan::Graphics
                                                 uint32_t dispatchCountZ,
                                                 bool isMemBarrier)
     {
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to begin recording compute command buffer!");
-        }
         {
             vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 
@@ -54,11 +47,6 @@ namespace Reinkan::Graphics
                 nullptr,
                 0,
                 nullptr);
-        }
-
-        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to record compute command buffer!");
         }
     }
 }

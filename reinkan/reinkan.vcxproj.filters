@@ -51,7 +51,7 @@
     <ClCompile Include="src\Graphics\Pipeline\ReinkanScanlinePipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\ScanlineRenderPass\ReinkanScanlineRenderPass.cpp">
+    <ClCompile Include="src\Graphics\ScanlineRenderPass\ReinkanScanline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\FrameBuffers\ReinkanFrameBuffers.cpp">
@@ -192,7 +192,7 @@
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordPostProcessing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\VolumetricLighting\ReinkanShadow.cpp">
+    <ClCompile Include="src\Graphics\Shadow\ReinkanShadow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordShadow.cpp">
@@ -214,6 +214,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordDeferredLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\DummyPipeline\ReinkanDummyPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

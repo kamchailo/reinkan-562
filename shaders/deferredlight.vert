@@ -34,7 +34,6 @@ void main()
     mat4 viewProjMatrix = ubo.proj * ubo.view * modelTransform;
     gl_Position = viewProjMatrix * vec4(inPosition, 1.0);
     
-    
     worldPos = (modelTransform * vec4(inPosition, 1.0)).xyz;
     vertexNormal = inVertexNormal;
     lightIndex = gl_InstanceIndex;

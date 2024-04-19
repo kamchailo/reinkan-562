@@ -40,8 +40,8 @@ namespace Reinkan::Graphics
         {
             float angle = static_cast<float>(time->GetElapseTime() * glm::radians(90.0f)) * 0.5f;
             glm::mat4 transform = glm::mat4(1);
-            transform = glm::scale(transform, glm::vec3(0.3));
-            transform = glm::translate(transform, glm::vec3(18.0f, 18.0f, 1.5f));
+            transform = glm::translate(transform, glm::vec3(0.0f, 1.0f, 0.5f));
+            transform = glm::scale(transform, glm::vec3(0.5f));
             transform = glm::rotate(transform, glm::radians(90.0f), glm::vec3(0, 0, 1));
             transform = glm::rotate(transform, angle, glm::vec3(0.0f, 1.0f, 0.0f));
             appObjects[0].transform = transform;

@@ -236,17 +236,18 @@ namespace Reinkan::Graphics
 
         void EndTempCommandBuffer(VkCommandBuffer commandBuffer); // should be change to dedicated Command Buffer for Buffer Initialization
 
-        VkCommandPool                appCommandPool;
-        std::vector<VkCommandBuffer> appCommandBuffers;
+        VkCommandPool                   appCommandPool;
+        std::vector<VkCommandBuffer>    appCommandBuffers;
 
-        VkCommandPool appComputeCommandPool;
+        VkCommandPool                   appComputeCommandPool;
+        std::vector<VkCommandBuffer>    appComputeCommandBuffers;
 
     // ReinkanSyncObjects.cpp
         void CreateSyncObjects();
 
-        std::vector<VkSemaphore>    imageAvailableSemaphores;
-        std::vector<VkSemaphore>    renderFinishedSemaphores;
-        std::vector<VkFence>        inFlightFences;
+        std::vector<VkSemaphore>        imageAvailableSemaphores;
+        std::vector<VkSemaphore>        renderFinishedSemaphores;
+        std::vector<VkFence>            inFlightFences;
 
     // ReinkanDrawFrame.cpp
         void DrawFrame();
@@ -264,7 +265,7 @@ namespace Reinkan::Graphics
                                         uint32_t dispatchCountX, 
                                         uint32_t dispatchCountY, 
                                         uint32_t dispatchCountZ,
-                                        bool isMemBarrier);
+                                        bool isMemBarrier = false);
 
     ////////////////////////////////////////
     //      Resources Binding
@@ -373,6 +374,22 @@ namespace Reinkan::Graphics
                            int32_t texWidth, 
                            int32_t texHeight, 
                            uint32_t mipLevels);
+
+        void CmdCopyImage(VkCommandBuffer commandBuffer, 
+                        ImageWrap& srcImage, 
+                        ImageWrap& dstImage,
+                        uint32_t imageWidth,
+                        uint32_t imageHeight);
+
+        void CmdImageLayoutBarrier(VkCommandBuffer commandBuffer,
+                                    VkImage image,
+                                    VkImageLayout oldImageLayout,
+                                    VkImageLayout newImageLayout,
+                                    VkImageAspectFlags aspectMask = VK_IMAGE_ASPECT_COLOR_BIT);
+
+        VkAccessFlags GetAccessFlagFromImageLayout(VkImageLayout layout);
+
+        VkPipelineStageFlags GetPipelineStageFromImageLayout(VkImageLayout layout);
 
     // ReinkanDepthBuffer.cpp
         void CreateSwapchainDepthResource();
@@ -518,7 +535,7 @@ namespace Reinkan::Graphics
         uint32_t    appDebugFlag{ 0x0 };
         float       appDebugFloat{ 0.5f };
         float       appDebugFloat2{ 0.5f };
-        float       appDebugFloat3{ 0.1f };
+        float       appDebugFloat3{ 30.0f };
         int         appDebugInt{ 0 };
 
         bool        appImguiBool1{ false };
@@ -527,6 +544,7 @@ namespace Reinkan::Graphics
         bool        appImguiBool4{ false };
         bool        appImguiBool5{ false };
         bool        appImguiBool6{ false };
+        bool        appImguiBool7{ true };
 
 
     ////////////////////////////////////////
@@ -747,7 +765,21 @@ namespace Reinkan::Graphics
 
         void CreateShadowResources(size_t width, size_t height);
 
+        void CreateShadowBlurDescriptorSetWrap();
+
+        void CreateShadowBlurHorizontalPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateShadowBlurVerticalPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateShadowBlurResources();
+
+        void CreateShadowCommandBuffer();
+
+        void CreateShadowSyncObjects();
+
         void UpdateShadowUBO(uint32_t currentImage);
+
+        void UpdateShadowBlurUBO(uint32_t currentImage);
 
         void RecordShadowPass(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
@@ -759,21 +791,73 @@ namespace Reinkan::Graphics
 
         std::vector<ImageWrap>          appShadowMapImageWraps;
 
+        std::vector<ImageWrap>          appBlurShadowMapImageWraps;
+
+        DescriptorWrap                  appShadowDescriptorWrap;
         VkPipeline                      appShadowPipeline;
         VkPipelineLayout                appShadowPipelineLayout;
+
+        DescriptorWrap                  appShadowBlurDescriptorWrap;
+        VkPipeline                      appShadowBlurHorizontalPipeline;
+        VkPipelineLayout                appShadowBlurHorizontalPipelineLayout;
+
+        VkPipeline                      appShadowBlurVerticalPipeline;
+        VkPipelineLayout                appShadowBlurVerticalPipelineLayout;
 
         size_t                          appShadowMapWidth;
         size_t                          appShadowMapHeight;
 
         glm::vec3                       appGlobalLightPosition{ 8.0, 8.0, 1.0 };
         glm::vec3                       appGlobalLightDirection{ -0.704361, -0.704361, -0.0880451 };
-        //glm::vec3                       appGlobalLightPosition{ 0.0, 8.0, 0.0 };
-        //glm::vec3                       appGlobalLightDirection{ 0.0, -0.7, 0.0 };
-
         glm::mat4                       appShadowProjectionViewMatrix;
 
-        DescriptorWrap                  appShadowDescriptorWrap;
         std::vector<BufferWrap>         appShadowUBO;
         std::vector<void*>              appShadowUBOMapped; // Address to Buffer | HOST_VISIBLE
+
+        std::vector<BufferWrap>         appShadowBlurUBO;
+        std::vector<void*>              appShadowBlurUBOMapped; // Address to Buffer | HOST_VISIBLE
+
+        std::vector<VkCommandBuffer>    appShadowCommandBuffer; // Command Buffer on Graphics Queue
+
+        // Semaphores for Shadow Pass
+        std::vector<VkSemaphore>        appPreComputeFinishedSemaphores;
+        std::vector<VkFence>            appRenderShadowFences;
+        // Semaphores for Shadow Compute -- Convolution Blur
+        std::vector<VkSemaphore>        appComputeShadowBlurFinishedSemaphores;
+        std::vector<VkFence>            appComputeShadowBlurFences;
+
+        std::vector<BufferWrap>         appShadowBlurBlocks;
+
+
+
+        /*
+        * 
+        * Try New Compute Pipeline
+        * 
+        */
+
+
+        void CreateDummyComputePipeline(uint32_t dummyWidth, uint32_t dummyHeight);
+
+        void RecordDummyCompute();
+        
+        void DestroyDummyResources();
+
+        DescriptorWrap                  appDummyDescriptorWrap;
+        VkPipeline                      appDummyPipeline;
+        VkPipelineLayout                appDummyPipelineLayout;
+           
+        std::vector<ImageWrap>          appDummyImageWraps;
+        std::vector<BufferWrap>         appDummyBuffer;
+
+        struct DummyData 
+        {
+            glm::vec4 position;
+            glm::vec4 color;
+            float value;
+        };
+
+        std::vector<DummyData>          appDummyData;
+
     };
 }

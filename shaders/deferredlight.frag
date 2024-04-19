@@ -71,8 +71,4 @@ void main()
     vec3 brdfColor = EvalBrdf(normal, L, V, pixelMaterial);
 
     outColor = vec4(brdfColor * lightColor, 1.0);
-    // outColor = vec4(vec3(lightIndex / 5), 1.0);
-    // outColor = vec4(lightDirection, 1.0);
-    // outColor = vec4(GetDebugIntColor(lightIndex), 1.0);
-    // outColor = vec4(vec3(NL), 1.0);
 }

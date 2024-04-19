@@ -411,7 +411,7 @@ namespace Reinkan::Graphics
             else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_GENERAL)
             {
                 barrier.srcAccessMask = 0;
-                barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
 
                 sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
                 destinationStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;  // Depth Test before fragment
@@ -563,4 +563,108 @@ namespace Reinkan::Graphics
 
         EndTempCommandBuffer(commandBuffer);
     }
+
+    void ReinkanApp::CmdCopyImage(VkCommandBuffer commandBuffer, 
+                                  ImageWrap& srcImage, 
+                                  ImageWrap& dstImage,
+                                  uint32_t imageWidth,
+                                  uint32_t imageHeight)
+    {
+        VkImageCopy imageCopyRegion{};
+        imageCopyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageCopyRegion.srcSubresource.layerCount = 1;
+        imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageCopyRegion.dstSubresource.layerCount = 1;
+        imageCopyRegion.extent.width = imageWidth;
+        imageCopyRegion.extent.height = imageWidth;
+        imageCopyRegion.extent.depth = 1;
+
+        CmdImageLayoutBarrier(commandBuffer, srcImage.image,
+                              VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+        CmdImageLayoutBarrier(commandBuffer, dstImage.image,
+                              VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+        vkCmdCopyImage(commandBuffer,
+                       srcImage.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                       dstImage.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                       1, &imageCopyRegion);
+
+        CmdImageLayoutBarrier(commandBuffer, srcImage.image,
+                              VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
+        CmdImageLayoutBarrier(commandBuffer, dstImage.image,
+                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
+
+    }
+
+    void ReinkanApp::CmdImageLayoutBarrier(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkImageAspectFlags aspectMask)
+    {
+        VkImageSubresourceRange subresourceRange;
+        subresourceRange.aspectMask = aspectMask;
+        subresourceRange.levelCount = VK_REMAINING_MIP_LEVELS;
+        subresourceRange.layerCount = VK_REMAINING_ARRAY_LAYERS;
+        subresourceRange.baseMipLevel = 0;
+        subresourceRange.baseArrayLayer = 0;
+
+        VkImageMemoryBarrier imageMemoryBarrier{ VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER };
+        imageMemoryBarrier.oldLayout = oldImageLayout;
+        imageMemoryBarrier.newLayout = newImageLayout;
+        imageMemoryBarrier.image = image;
+        imageMemoryBarrier.subresourceRange = subresourceRange;
+        imageMemoryBarrier.srcAccessMask = GetAccessFlagFromImageLayout(oldImageLayout);
+        imageMemoryBarrier.dstAccessMask = GetAccessFlagFromImageLayout(newImageLayout);
+        imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        VkPipelineStageFlags srcStageMask = GetPipelineStageFromImageLayout(oldImageLayout);
+        VkPipelineStageFlags destStageMask = GetPipelineStageFromImageLayout(newImageLayout);
+
+        vkCmdPipelineBarrier(commandBuffer, srcStageMask, destStageMask, 0,
+            0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+    }
+
+    VkAccessFlags ReinkanApp::GetAccessFlagFromImageLayout(VkImageLayout layout)
+    {
+        switch (layout)
+        {
+        case VK_IMAGE_LAYOUT_PREINITIALIZED:
+            return VK_ACCESS_HOST_WRITE_BIT;
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+            return VK_ACCESS_TRANSFER_WRITE_BIT;
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+            return VK_ACCESS_TRANSFER_READ_BIT;
+        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+            return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+            return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+            return VK_ACCESS_SHADER_READ_BIT;
+        default:
+            return VkAccessFlags{};
+        }
+    }
+
+    VkPipelineStageFlags ReinkanApp::GetPipelineStageFromImageLayout(VkImageLayout layout)
+    {
+        switch (layout)
+        {
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+            return VK_PIPELINE_STAGE_TRANSFER_BIT;
+        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+            return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+            return VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;  // Allow queue other than graphic
+            // return VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+            return VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;  // Allow queue other than graphic
+            // return VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        case VK_IMAGE_LAYOUT_PREINITIALIZED:
+            return VK_PIPELINE_STAGE_HOST_BIT;
+        case VK_IMAGE_LAYOUT_UNDEFINED:
+            return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        default:
+            return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+        }
+    }
+
+
 }

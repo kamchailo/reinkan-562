@@ -25,10 +25,11 @@ layout(binding = 5) uniform sampler2D specularMap;
 
 layout(binding = 6) uniform sampler2D deferredImage;
 
+layout(binding = 7) uniform sampler2D blurShadow;
+
 void main()
 {
     vec2 uv = gl_FragCoord.xy/pushConstant.screenExtent;
-    // outColor = vec4(uv, 0, 1);
     vec4 colorPass = texture(renderedImage, uv);
     float shadow = colorPass.a;
 
@@ -37,27 +38,12 @@ void main()
         outColor = vec4(texture(shadowMap, uv).rgb, 1);
         return;
     }
-
     if((pushConstant.debugFlag & 0x2) > 1)
     {
-        outColor = colorPass;
+        outColor = vec4(texture(blurShadow, uv).rgb, 1);
         return;
     }
-    if((pushConstant.debugFlag & 0x4) > 1)
-    {
-        outColor = vec4(texture(positionMap, uv).rgb, 1);
-        return;
-    }
-    if((pushConstant.debugFlag & 0x8) > 1)
-    {
-        outColor = vec4(texture(normalMap, uv).rgb, 1);
-        return;
-    }
-    if((pushConstant.debugFlag & 0x10) > 1)
-    {
-        outColor = vec4(texture(specularMap, uv).rgb, 1);
-        return;
-    }
+
     if((pushConstant.debugFlag & 0x20) > 1)
     {
         shadow = 1.0;
@@ -79,14 +65,20 @@ void main()
 
     vec3 brdfColor = EvalBrdf(normal, L, V, pixelMaterial) * 0.5;
 
-
     // add local lights
-    vec3 finalColor = (colorPass * 0.1).rgb + shadow * brdfColor + texture(deferredImage, uv).rgb;
+    vec3 finalColor = (colorPass * 0.1).rgb + (1.0 - shadow) * brdfColor + texture(deferredImage, uv).rgb;
 
     outColor = vec4(finalColor, 1.0);
 
-    // vec3 lightShaft = texture(vlightMap, uv).rgb * pushConstant.debugFloat2;
-    // vec3 dodgeLightShaft = finalColor * lightShaft;
-    // outColor = vec4(finalColor + dodgeLightShaft + (lightShaft * 0.3), 1);
+    /* Volumetric Light
+    if((pushConstant.debugFlag & 0x40) > 1)
+    {
+        vec3 lightShaft = texture(vlightMap, uv).rgb;
+        vec3 dodgeLightShaft = finalColor * lightShaft;
+        outColor = vec4(finalColor + dodgeLightShaft + (lightShaft * 0.03), 1);
+        // outColor = vec4(finalColor + lightShaft, 1.0);
+    }
+    */
+
 
 }

@@ -35,6 +35,7 @@ namespace Reinkan
 		alignas(4) uint32_t debugFlag;
 		alignas(4) float debugFloat;
 		alignas(4) float debugFloat2;
+		alignas(4) float debugFloat3;
 		alignas(4) int debugInt;
 	};
 
@@ -46,12 +47,19 @@ namespace Reinkan
 		alignas(8) glm::vec2 screenExtent;
 	};
 
+	struct ShadowBlurUniformBufferObject {
+		alignas(4) uint32_t blurWidth;
+		alignas(4) uint32_t shadowWidth;
+		alignas(4) uint32_t shadowHeight;
+		alignas(4) uint32_t _padding;
+	};
+
 	struct PushConstantShadow
 	{
 		alignas(16) glm::mat4 modelMatrix;
 		alignas(8)  glm::vec2 screenExtent;
 	};
-
+	
 	// Use ScanlineUBO
 
 	struct PushConstantVLight

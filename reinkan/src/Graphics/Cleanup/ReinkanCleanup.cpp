@@ -11,8 +11,11 @@ namespace Reinkan::Graphics
 
 		CleanupSwapchain();
 
-		//Debug
+		// Debug
 		DestroyDebugResources();
+
+		// Dummy
+		DestroyDummyResources();
 
 		// Global Light
 		appClusteredGlobalLights.Destroy(appDevice);

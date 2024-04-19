@@ -183,6 +183,9 @@ namespace Reinkan::Graphics
         // Rebind Descriptor for Scanline
         appScanlineDescriptorWrap.Write(appDevice, 4, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
 
+        // Rebind Compute Shadow Blur
+        appShadowBlurDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+
         // Rebind Descriptor for VLight
         appVLightDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
         appVLightDescriptorWrap.Write(appDevice, 2, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);

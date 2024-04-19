@@ -8,6 +8,7 @@ struct PushConstant
     uint debugFlag;
     float debugFloat;
     float debugFloat2;
+    float debugFloat3;
     int debugInt;
 };
 
@@ -34,6 +35,13 @@ struct UniformBufferObject
     vec3 globalLightPosition;
     uint globalLightPosition_padding;
     vec2 screenExtent;
+};
+
+struct ShadowBlurUniformBufferObject {
+    uint blurWidth;
+    uint imageWidth;
+    uint imageHeight;
+    uint _padding;
 };
 
 struct LightObject

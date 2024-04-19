@@ -4,6 +4,7 @@
 // #extension GL_EXT_buffer_reference2 : require
 
 #include "SharedStruct.glsl"
+#include "momentShadowMapCalculation.glsl"
 
 layout(push_constant) uniform PushConstantRaster_T
 {
@@ -69,12 +70,16 @@ void main()
     ////////////////////////////////////////
     //          Shadow Mapping
     ////////////////////////////////////////
-    int shadow = 0;
+    float shadow = 0;
     vec2 shadowIndex = shadowCoord.xy/shadowCoord.w;
-    float lightDepth = texture(shadowmap, shadowIndex).w;
+    float lightDepth = texture(shadowmap, shadowIndex).r;
     // minus constant to remove shadow acne
     float pixelDepth = shadowCoord.w - 0.01;
 
+    shadow = MomentShadowMapCalculation(shadowmap, shadowCoord);
+    // shadow = VarianceShadowMapCalculation(shadowmap, shadowCoord);
+
+    /*
     if(shadowCoord.w > 0 && 
         shadowIndex.x >= 0 && shadowIndex.x <= 1 &&
         shadowIndex.y >= 0 && shadowIndex.y <= 1)
@@ -84,7 +89,7 @@ void main()
             shadow = 1;
         }
     }
-
+    */
     if(material.diffuseMapId != -1)
     {
         vec3 diffuse = texture(textureSamplers[material.diffuseMapId], fragTexCoord).rgb;
@@ -127,3 +132,4 @@ void main()
 
     }
 }
+ 

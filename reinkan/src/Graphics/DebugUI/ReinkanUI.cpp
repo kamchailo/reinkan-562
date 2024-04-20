@@ -105,11 +105,12 @@ namespace Reinkan::Graphics
         ImGui::Checkbox("Show Shadow Map: ", &appImguiBool1);
 
         ImGui::Checkbox("Show Blurred Shadow", &appImguiBool2);
-        /*
-        ImGui::Checkbox("Position Map", &appImguiBool3);
 
+        ImGui::Checkbox("Global Light Pass", &appImguiBool3);
+        
         ImGui::Checkbox("Normal Map", &appImguiBool4);
 
+        /*
         ImGui::Checkbox("Specular Map", &appImguiBool5);
 
         ImGui::Checkbox("Hide Shadow", &appImguiBool6);
@@ -119,7 +120,7 @@ namespace Reinkan::Graphics
         
         ImGui::SliderFloat("Debug Shininess: ", &appDebugFloat, 0.01f, 2.0f);
 
-        ImGui::SliderFloat("Debug Intensity: ", &appDebugFloat2, 0.01f, 2.0f);
+        ImGui::SliderFloat("Debug Intensity: ", &appDebugFloat2, 0.01f, 5.0f); 
 
         ImGui::SliderFloat("Debug Camera Fovy: ", &appDebugFloat3, 10.0f, 90.0f);
 

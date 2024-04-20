@@ -1,4 +1,4 @@
-#define PI 3.141592
+#define PI 3.14159265358979323846
 
 float G1(vec3 w, vec3 m, vec3 N, float alpha_suqared)
 {

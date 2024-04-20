@@ -40,7 +40,14 @@ namespace Reinkan::Graphics
             modelTr = glm::rotate(modelTr, 0.5f, glm::vec3(0, 1, 0));
             modelTr = glm::translate(modelTr, glm::vec3(0.0f, 1.0f, 0.0f));
 
+            ReadAssimpFile("../assets/models/smoothSphere.obj",
+                modelTr,
+                modelDatas,
+                vulkanApp->GetAppMaterialPool(),
+                vulkanApp->GetAppTexturePool(),
+                vulkanApp->GetAppMaterialPool().size());
             
+            /*
             ReadAssimpFile("../assets/models/simpleShapesIco.obj",
                 modelTr,
                 modelDatas,
@@ -49,6 +56,7 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppMaterialPool().size());
             
 
+            */
             //ModelData sponza;
             ReadAssimpFile("../assets/models/sponza.obj",
             
@@ -116,6 +124,10 @@ namespace Reinkan::Graphics
             {
                 vulkanApp->AppendLightMesh(lightMeshModelData);
             }
+
+            // HDR Image
+            vulkanApp->AddHDRImagePath("../assets/hdrTextures/NatureLabFront_IBL_Ref");
+            vulkanApp->AddHDRImagePath("../assets/hdrTextures/Alexs_Apt_2k");
 
             vulkanApp->BindResources();
         }

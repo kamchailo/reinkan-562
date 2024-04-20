@@ -207,6 +207,28 @@ namespace Reinkan::Graphics
             //appShadowMapImageWraps[i].sampler = CreateImageSampler();
             appShadowMapImageWraps[i].sampler = CreateNearestImageSampler();
         }
+            
+        VkFormat depthFormat = FindDepthFormat();
+
+        appShadowDepthImageWrap = CreateImageWrap(appShadowMapWidth,
+            appShadowMapHeight,
+            depthFormat,
+            VK_IMAGE_TILING_OPTIMAL,
+            VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+            | VK_IMAGE_USAGE_SAMPLED_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            1,
+            appMsaaSamples);
+
+        appShadowDepthImageWrap.imageView = CreateImageView(appShadowDepthImageWrap.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+
+        TransitionImageLayout(appShadowDepthImageWrap.image,
+            depthFormat,
+            VK_IMAGE_LAYOUT_UNDEFINED,
+            VK_IMAGE_LAYOUT_GENERAL);
+
+        appShadowDepthImageWrap.sampler = CreateImageSampler();
+        appShadowDepthImageWrap.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
 
         appShadowFrameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -218,7 +240,7 @@ namespace Reinkan::Graphics
                 // Write to Scanline ImageWrap
                 // which will get read by post processing
                 appShadowMapImageWraps[i].imageView,
-                appSwapchainDepthImageWrap.imageView
+                appShadowDepthImageWrap.imageView
             };
 
             VkFramebufferCreateInfo framebufferInfo{};
@@ -338,6 +360,59 @@ namespace Reinkan::Graphics
             framebufferInfo.layers = 1;
 
             if (vkCreateFramebuffer(appDevice, &framebufferInfo, nullptr, &appDeferredLightFrameBuffers[i]) != VK_SUCCESS)
+            {
+                throw std::runtime_error("failed to create framebuffer!");
+            }
+        }
+    }
+
+    void ReinkanApp::CreateGlobalLightFrameBuffers()
+    {
+        appGlobalLightingRenderTargetImageWraps.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+        {
+            appGlobalLightingRenderTargetImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
+                appSwapchainExtent.height,
+                appSwapchainImageFormat,                                  // Image Format
+                VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
+                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
+                | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+                | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
+                1,
+                appMsaaSamples);
+
+            TransitionImageLayout(appGlobalLightingRenderTargetImageWraps[i].image,
+                appSwapchainImageFormat,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_GENERAL);
+
+            appGlobalLightingRenderTargetImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+            appGlobalLightingRenderTargetImageWraps[i].imageView = CreateImageView(appGlobalLightingRenderTargetImageWraps[i].image, appSwapchainImageFormat);
+            appGlobalLightingRenderTargetImageWraps[i].sampler = CreateImageSampler();
+        }
+
+        appGlobalLightFrameBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+        {
+            std::array<VkImageView, 1> attachments = {
+                // Write to appGlobalLightingRenderTargetImageWraps
+                appGlobalLightingRenderTargetImageWraps[i].imageView
+            };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = appGlobalLightRenderPass;
+            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+            framebufferInfo.pAttachments = attachments.data();
+            framebufferInfo.width = appSwapchainExtent.width;
+            framebufferInfo.height = appSwapchainExtent.height;
+            framebufferInfo.layers = 1;
+
+            if (vkCreateFramebuffer(appDevice, &framebufferInfo, nullptr, &appGlobalLightFrameBuffers[i]) != VK_SUCCESS)
             {
                 throw std::runtime_error("failed to create framebuffer!");
             }

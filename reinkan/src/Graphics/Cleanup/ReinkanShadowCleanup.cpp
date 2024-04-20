@@ -18,10 +18,11 @@ namespace Reinkan::Graphics
             // only compute shader target does not need to recreate when resizing window
             appBlurShadowMapImageWraps[i].Destroy(appDevice);
 
-            // Move to clean up swapchain for frame resizing
-            //appShadowMapImageWraps[i].Destroy(appDevice);
-            //vkDestroyFramebuffer(appDevice, appShadowFrameBuffers[i], nullptr);
+            appShadowMapImageWraps[i].Destroy(appDevice);
+            vkDestroyFramebuffer(appDevice, appShadowFrameBuffers[i], nullptr);
         }
+
+        appShadowDepthImageWrap.Destroy(appDevice);
 
         appShadowDescriptorWrap.Destroy(appDevice);
         vkDestroyPipeline(appDevice, appShadowPipeline, nullptr);

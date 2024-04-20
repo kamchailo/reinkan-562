@@ -136,6 +136,13 @@ namespace Reinkan::Graphics
                                       MAX_FRAMES_IN_FLIGHT,                                         // descriptorCount; // Has to > 0
                                       VK_SHADER_STAGE_FRAGMENT_BIT });                              // stageFlags;
 
+        // appGlobalLightingRenderTargetImageWraps
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                                               // binding;
+                                      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,                    // descriptorType;
+                                      MAX_FRAMES_IN_FLIGHT,                                         // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_FRAGMENT_BIT });                              // stageFlags;
+
         // appBlurShadowMapImageWraps
         bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
                                       bindingIndex++,                                               // binding;
@@ -154,7 +161,9 @@ namespace Reinkan::Graphics
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appDeferredLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
-
+        // Global Light Render Target
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appGlobalLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Blur Shadow
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appBlurShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
     }
 

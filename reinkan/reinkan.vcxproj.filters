@@ -216,7 +216,7 @@
     <ClCompile Include="src\Graphics\Draw\ReinkanRecordDeferredLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\DummyPipeline\ReinkanDummyPipeline.cpp">
+    <ClCompile Include="src\Graphics\GlobalLight\ReinkanGlobalLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -111,6 +111,18 @@ struct PushConstantPost
     float debugFloat3;
 };
 
+struct PushConstantGlobalLight
+{
+    vec2    screenExtent;
+	uint	distributionNumber;
+	uint	IBLTextureIndex;
+	uint	LODOffset;
+    uint    debugFlag;
+    float   debugFloat;
+    float   debugFloat2;
+    float   debugFloat3;
+};
+
 vec3 colorSample[8] = {vec3(1.0, 0.0, 0.0), 
                         vec3(1.0, 1.0, 0.0), 
                         vec3(0.0, 1.0, 0.0), 

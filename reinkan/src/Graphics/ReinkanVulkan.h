@@ -107,6 +107,9 @@ namespace Reinkan::Graphics
     // ReinkanParallaxOcclusion.cpp
         void AddPyramidalPath(std::string const& path);
 
+    //ReinkanGlobalLight.cpp
+        void AddHDRImagePath(std::string const& path);
+
     // ------------------------------------------------------------------------------------------------------------------------------//
     // ------------------------------------------------------------------------------------------------------------------------------//
     // ------------------------------------------------------------------------------------------------------------------------------//
@@ -308,6 +311,8 @@ namespace Reinkan::Graphics
     
     // ReinkanImageLoader.cpp
         ImageWrap CreateTextureImageWrap(std::string path);
+
+        ImageWrap CreateHDRTextureImageWrap(std::string path);
 
     // ReinkanImageUtility.cpp
         ImageWrap CreateImageWrap(uint32_t width,
@@ -534,7 +539,7 @@ namespace Reinkan::Graphics
 
         uint32_t    appDebugFlag{ 0x0 };
         float       appDebugFloat{ 0.5f };
-        float       appDebugFloat2{ 0.5f };
+        float       appDebugFloat2{ 1.0f };
         float       appDebugFloat3{ 30.0f };
         int         appDebugInt{ 0 };
 
@@ -753,6 +758,37 @@ namespace Reinkan::Graphics
         DescriptorWrap                  appVLightDescriptorWrap;
         BufferWrap                      appVLightVertexBufferWrap;
         BufferWrap                      appVLightIndexBufferWrap;
+    
+    // ReinkanGlobalLight.cpp
+        void CreateGlobalLightRenderPass();
+
+        void CreateGlobalLightFrameBuffers();
+
+        void CreateGlobalLightDescriptorSetWrap();
+
+        void CreateGlobalLightPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateGlobalLightResources();
+
+        void RecordGlobalLightPass(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+        void DestroyGlobalLightResources();
+
+        void BuildHammersley(std::vector<float> &result, uint32_t N);
+
+        VkRenderPass                    appGlobalLightRenderPass;
+        std::vector<VkFramebuffer>      appGlobalLightFrameBuffers;
+
+        DescriptorWrap                  appGlobalLightDescriptorWrap;
+        VkPipeline                      appGlobalLightPipeline;
+        VkPipelineLayout                appGlobalLightPipelineLayout;
+
+        std::vector<ImageWrap>          appGlobalLightingRenderTargetImageWraps;
+
+        std::vector<float>              appGlobalLightIBLHammersleyUV;
+        BufferWrap                      appGlobalLightIBLHammersleyBufferWrap;
+        std::vector<std::string>        appGlobalLightHDRImagePaths;
+        std::vector<ImageWrap>          appGlobalLightHDRImageWraps;
 
     // ReinkanShadow.cpp
         void CreateShadowRenderPass();
@@ -790,6 +826,7 @@ namespace Reinkan::Graphics
         std::vector<VkFramebuffer>      appShadowFrameBuffers;
 
         std::vector<ImageWrap>          appShadowMapImageWraps;
+        ImageWrap                       appShadowDepthImageWrap;
 
         std::vector<ImageWrap>          appBlurShadowMapImageWraps;
 
@@ -827,37 +864,6 @@ namespace Reinkan::Graphics
         std::vector<VkFence>            appComputeShadowBlurFences;
 
         std::vector<BufferWrap>         appShadowBlurBlocks;
-
-
-
-        /*
-        * 
-        * Try New Compute Pipeline
-        * 
-        */
-
-
-        void CreateDummyComputePipeline(uint32_t dummyWidth, uint32_t dummyHeight);
-
-        void RecordDummyCompute();
-        
-        void DestroyDummyResources();
-
-        DescriptorWrap                  appDummyDescriptorWrap;
-        VkPipeline                      appDummyPipeline;
-        VkPipelineLayout                appDummyPipelineLayout;
-           
-        std::vector<ImageWrap>          appDummyImageWraps;
-        std::vector<BufferWrap>         appDummyBuffer;
-
-        struct DummyData 
-        {
-            glm::vec4 position;
-            glm::vec4 color;
-            float value;
-        };
-
-        std::vector<DummyData>          appDummyData;
 
     };
 }

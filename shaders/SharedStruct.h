@@ -170,4 +170,17 @@ namespace Reinkan
 		alignas(16) glm::vec3	position;
 		alignas(16) glm::vec3	vertexNormal;
 	};
+
+	struct PushConstantGlobalLight
+	{
+		alignas(8) glm::vec2 	screenExtent;
+		alignas(4) uint32_t		distributionNumber;
+		alignas(4) uint32_t		IBLTextureIndex;
+		alignas(4) uint32_t		LODOffset;
+		alignas(4) uint32_t    	debugFlag;
+		alignas(4) float   		debugFloat;
+		alignas(4) float   		debugFloat2;
+		alignas(4) float   		debugFloat3;
+
+	};
 }

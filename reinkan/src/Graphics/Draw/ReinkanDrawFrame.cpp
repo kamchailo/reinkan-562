@@ -184,6 +184,8 @@ namespace Reinkan::Graphics
 
             RecordScanline(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
+            RecordGlobalLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
+
             RecordDeferredLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
             RecordVLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);

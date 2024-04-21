@@ -47,14 +47,29 @@ const uint HDR_HEIGHT = 1024;
 
 void main()
 {
+    uint hdrIndex = 2;
     vec2 screenUV = gl_FragCoord.xy / pushConstant.screenExtent;
     vec3 position = texture(positionMap, screenUV).xyz;
     vec3 normal = texture(normalMap, screenUV).xyz;
+    float depth = texture(positionMap, screenUV).a;
+    
+    // SkySphere
+    if(depth > 100.0)
+    {
+        vec3 viewDir = -normalize(pushConstant.cameraPosition.xyz - position);
+
+        vec2 skyUV;
+        skyUV.x = 0.5 - (atan(-viewDir.z, viewDir.x) / (2.0 * PI));
+        skyUV.x = max(0.0, min(1.0, skyUV.x));
+        skyUV.y = acos(viewDir.y) / PI;
+        vec3 hdr = texture(hdrTextureSamplers[hdrIndex], skyUV).xyz;
+        outColor = vec4(hdr, 1);
+        return;
+    }
+
     vec3 Kd = texture(renderedImage,screenUV).rgb;
     vec3 Ks = texture(specularMap, screenUV).rgb;
     float alpha = texture(specularMap, screenUV).a;
-
-    uint hdrIndex = 2;
 
     float hammersleyNumber = HAMMERSLEY_NUMBER * 2;
     vec2 hammersleySeq[HAMMERSLEY_NUMBER];
@@ -70,7 +85,7 @@ void main()
     uv.x = max(0.0, min(1.0, uv.x));
     uv.y = acos(normal.y) / PI;
     vec3 hdr = texture(hdrTextureSamplers[hdrIndex], uv).xyz;
-    vec3 irradiance = texture(hdrTextureSamplers[hdrIndex + 1], uv).xyz * pushConstant.debugFloat2;
+    vec3 irradiance = texture(hdrTextureSamplers[hdrIndex + 1], uv).xyz * pushConstant.debugFloat;
     
     Material material;
     material.diffuse = 1.0 - Ks;
@@ -123,11 +138,15 @@ void main()
         sumBrdf += calculateHDRBRDF(Wk, V, N, Li, material);
 
     }
+    // Divided by total number of sample to get an average
+    sumBrdf = sumBrdf / float(HAMMERSLEY_NUMBER) * pushConstant.debugFloat2;
 
-    sumBrdf = sumBrdf / float(HAMMERSLEY_NUMBER);
+    vec3 brdfColor = (Kd / PI) * (irradiance) + sumBrdf;
+    
+    // tone mapping to sRGB
+    const float e = 0.6;
+    vec3 finalColor = pow((e * brdfColor) / (e * brdfColor + vec3(1.0)), vec3(1.0/2.2));
 
-
-    vec3 finalColor = (Kd / PI) * (irradiance) + sumBrdf;
     outColor = vec4(finalColor, 1.0);
 }
 
@@ -151,9 +170,8 @@ float G1(vec3 w, vec3 m, vec3 N, float alpha_suqared)
 vec3 calculateHDRBRDF(vec3 Wk, vec3 V, vec3 N, vec3 Li, Material material)
 {
     // Wk is L
-    vec3 Kd = material.diffuse;
+    // vec3 Kd = material.diffuse;
     vec3 Ks = material.specular;
-    Kd = min(vec3(1.0) - Ks, Kd);
     const float alpha = material.shininess;
     
 

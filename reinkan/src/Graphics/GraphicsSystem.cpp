@@ -45,6 +45,18 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppTexturePool(),
                 vulkanApp->GetAppMaterialPool().size());
 
+            // ----------- SKY SPHERE -----------
+            modelTr = glm::mat4(1);
+            modelTr = glm::scale(modelTr, glm::vec3(-700.0f));
+            //modelTr = glm::rotate(modelTr, 0.5f, glm::vec3(0, 1, 0)); 
+            modelTr = glm::translate(modelTr, glm::vec3(0.0f, 0.0f, 0.0f));
+            ReadAssimpFile("../assets/models/smoothSphere.obj",
+                modelTr,
+                modelDatas,
+                vulkanApp->GetAppMaterialPool(),
+                vulkanApp->GetAppTexturePool(),
+                vulkanApp->GetAppMaterialPool().size());
+
             modelTr = glm::mat4(1);
             modelTr = glm::scale(modelTr, glm::vec3(0.3f));
             modelTr = glm::rotate(modelTr, 0.5f, glm::vec3(0, 1, 0));
@@ -89,6 +101,17 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppTexturePool(),
                 vulkanApp->GetAppMaterialPool().size());
             
+            modelTr = glm::mat4(1);
+            modelTr = glm::scale(modelTr, glm::vec3(0.3f));
+            modelTr = glm::rotate(modelTr, 0.0f, glm::vec3(0, 1, 0));
+            modelTr = glm::translate(modelTr, glm::vec3(-6.0f, 1.5f, 0.0f));
+            ReadAssimpFile("../assets/models/torus.obj",
+                modelTr,
+                modelDatas,
+                vulkanApp->GetAppMaterialPool(),
+                vulkanApp->GetAppTexturePool(),
+                vulkanApp->GetAppMaterialPool().size());
+
             /*
             ReadAssimpFile("../assets/models/simpleShapesIco.obj",
                 modelTr,

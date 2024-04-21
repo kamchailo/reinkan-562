@@ -118,9 +118,9 @@ namespace Reinkan::Graphics
         ImGui::Checkbox("Show V Light", &appImguiBool7);
         */
         
-        ImGui::SliderFloat("Debug Shininess: ", &appDebugFloat, 0.01f, 2.0f);
+        ImGui::SliderFloat("Diffuse Intensity: ", &appDebugFloat, 0.01f, 2.0f);
 
-        ImGui::SliderFloat("Debug Intensity: ", &appDebugFloat2, 0.01f, 5.0f); 
+        ImGui::SliderFloat("Specular Intensity: ", &appDebugFloat2, 0.01f, 5.0f); 
 
         ImGui::SliderFloat("Debug Camera Fovy: ", &appDebugFloat3, 10.0f, 90.0f);
 

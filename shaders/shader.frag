@@ -77,19 +77,7 @@ void main()
     float pixelDepth = shadowCoord.w - 0.01;
 
     shadow = MomentShadowMapCalculation(shadowmap, shadowCoord);
-    // shadow = VarianceShadowMapCalculation(shadowmap, shadowCoord);
 
-    /*
-    if(shadowCoord.w > 0 && 
-        shadowIndex.x >= 0 && shadowIndex.x <= 1 &&
-        shadowIndex.y >= 0 && shadowIndex.y <= 1)
-    {
-        if(pixelDepth < lightDepth)
-        {
-            shadow = 1;
-        }
-    }
-    */
     if(material.diffuseMapId != -1)
     {
         vec3 diffuse = texture(textureSamplers[material.diffuseMapId], fragTexCoord).rgb;
@@ -101,19 +89,12 @@ void main()
     vec3 normalMap = texture(textureSamplers[material.normalMapId], fragTexCoord).rgb;
     if(material.normalMapId <= 200)
     {
-        normalMap = (normalMap * 2.0) - 1.0;
+        // normalMap = (normalMap * 2.0) - 1.0;
         N = normalize(TBNMatrix * normalMap);
-        N.y = -N.y;
-        outColor = vec4(1,0,0,1);
-        return;
+        // N.y = -N.y;
+        // outColor = vec4(1,0,0,1);
+        // return;
     }
-
-    // Main Directional Light
-    // vec3 L = normalize(ubo.globalLightPosition - worldPos);
-    // float ambientLight = 0.06;
-    // float intensity = 0.7;
-    // vec3 V = normalize(-viewDir);
-    // vec3 brdfColor = (ambientLight * material.diffuse) + shadow * intensity * EvalBrdf(N, L, V, material);
     
     // Final Color Result
     outColor = vec4(material.diffuse, shadow);

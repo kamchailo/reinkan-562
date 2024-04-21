@@ -122,7 +122,7 @@ void main()
 
     outNormal = vec4(N, 1.0);
 
-    outSpecular = vec4(material.specular, 1.0);
+    outSpecular = vec4(material.specular, material.shininess);
 
     ////////////////////////////////////////
     //          Debug Flag

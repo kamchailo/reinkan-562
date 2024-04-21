@@ -173,6 +173,7 @@ namespace Reinkan
 
 	struct PushConstantGlobalLight
 	{
+		alignas(16) glm::vec4	cameraPosition;
 		alignas(8) glm::vec2 	screenExtent;
 		alignas(4) uint32_t		distributionNumber;
 		alignas(4) uint32_t		IBLTextureIndex;

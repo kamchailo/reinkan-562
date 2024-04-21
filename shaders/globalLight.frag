@@ -3,7 +3,6 @@
 #extension GL_EXT_nonuniform_qualifier : enable
 
 #include "SharedStruct.glsl"
-#include "brdf.glsl"
 
 layout(push_constant) uniform PushConstantGlobalLight_T
 {
@@ -36,26 +35,34 @@ layout(binding = 6) readonly buffer hammersleyNumberBlock
     float hammersleyUV[];
 };
 
+float G1(vec3 w, vec3 m, vec3 N, float alpha_suqared);
+vec3 calculateHDRBRDF(vec3 Wk, vec3 V, vec3 N, vec3 Li, Material material);
+
+const float PI = 3.14159265358979323846;
+
 const uint HAMMERSLEY_NUMBER = 20;
+
+const uint HDR_WIDTH = 2048;
+const uint HDR_HEIGHT = 1024;
 
 void main()
 {
     vec2 screenUV = gl_FragCoord.xy / pushConstant.screenExtent;
+    vec3 position = texture(positionMap, screenUV).xyz;
     vec3 normal = texture(normalMap, screenUV).xyz;
-    vec3 Kd = texture(renderedImage,screenUV).xyz;
+    vec3 Kd = texture(renderedImage,screenUV).rgb;
+    vec3 Ks = texture(specularMap, screenUV).rgb;
+    float alpha = texture(specularMap, screenUV).a;
 
     uint hdrIndex = 2;
 
-    float hammersleyNumber = pushConstant.distributionNumber * 2;
+    float hammersleyNumber = HAMMERSLEY_NUMBER * 2;
+    vec2 hammersleySeq[HAMMERSLEY_NUMBER];
     for(int i = 0; i < hammersleyNumber; i+=2)
     {
         float u = float(i) / hammersleyNumber;
         float v = float(i + 1) / hammersleyNumber;
-        if(length(screenUV - vec2(u,v)) <= 0.03)
-        {
-            outColor = vec4(1,0,1,1);
-            return;
-        }
+        hammersleySeq[i / 2] = vec2(u,v);
     }
 
     vec2 uv;
@@ -64,5 +71,108 @@ void main()
     uv.y = acos(normal.y) / PI;
     vec3 hdr = texture(hdrTextureSamplers[hdrIndex], uv).xyz;
     vec3 irradiance = texture(hdrTextureSamplers[hdrIndex + 1], uv).xyz * pushConstant.debugFloat2;
-    outColor = vec4((Kd / PI) * (irradiance), 1.0);
+    
+    Material material;
+    material.diffuse = 1.0 - Ks;
+    material.specular = Ks;
+    alpha = max(alpha, 0.001);
+    material.shininess = alpha;
+
+    vec3 N = normal;
+    vec3 V = normalize(pushConstant.cameraPosition.xyz - position);
+
+    vec3 sumBrdf = vec3(0);
+
+    float NV = max(0.0, dot(normal,V));
+    vec3 R = 2.0 * NV * normal - V;
+    vec3 A = normalize(vec3(-R.y, R.x, 0.0));
+    vec3 B = normalize(cross(R, A));
+
+    for(int i = 0; i < HAMMERSLEY_NUMBER; ++i)
+    {   
+        vec2 hammersleyUV = hammersleySeq[i];
+
+        float theta = atan((alpha * sqrt(hammersleyUV.y)) / sqrt(1.0 - hammersleyUV.y));
+        hammersleyUV = vec2(hammersleyUV.x, theta / PI);
+
+        float twoPi_HalfU = 2 * PI * (0.5 - hammersleyUV.x);
+        float piV = PI * hammersleyUV.y;
+        float sinPiV = sin(piV);
+        vec3 L = vec3(cos(twoPi_HalfU) * sinPiV, 
+                      sin(twoPi_HalfU) * sinPiV, 
+                      cos(piV));
+
+        vec3 Wk = normalize(L.x * A + L.y * B + L.z * R);
+
+        // D factor GGX
+        vec3 H = normalize(Wk + V);
+        float mN = dot(H, N);
+        float tan_square_theta_m = (1.0 - mN * mN) / (mN * mN);
+        float alpha_square = alpha * alpha;
+        float D = clamp(mN, 0.0, 1.0) * alpha_square
+                    / (PI * pow(mN, 4) * pow(alpha_square + tan_square_theta_m, 2));
+        float level = (0.5 * log2(HDR_WIDTH * HDR_HEIGHT / HAMMERSLEY_NUMBER)) - (0.25 * log2(D)) - 1;
+
+        level = max(0.0, level);
+
+        uv.x = 0.5 - (atan(-Wk.z, Wk.x) / (2.0 * PI));
+        uv.x = max(0.0, min(1.0, uv.x));
+        uv.y = acos(Wk.y) / PI;
+        vec3 Li = textureLod(hdrTextureSamplers[hdrIndex], uv, level).xyz;
+        
+        sumBrdf += calculateHDRBRDF(Wk, V, N, Li, material);
+
+    }
+
+    sumBrdf = sumBrdf / float(HAMMERSLEY_NUMBER);
+
+
+    vec3 finalColor = (Kd / PI) * (irradiance) + sumBrdf;
+    outColor = vec4(finalColor, 1.0);
+}
+
+float G1(vec3 w, vec3 m, vec3 N, float alpha_suqared)
+{
+    float wN = dot(w, N);
+    float wm = dot(w, m);
+    float tan_square_theta_w = (1.0 - wN * wN) / (wN * wN);
+    float G1;
+    if(wN > 1.0 || sqrt(tan_square_theta_w) == 0) 
+    {
+        G1 = 1.0;
+    } 
+    else 
+    {
+        G1 = clamp(wm / wN, 0.0, 1.0) * (2 / (1 + sqrt(1 + alpha_suqared * tan_square_theta_w)));
+    }
+    return G1;
+}
+
+vec3 calculateHDRBRDF(vec3 Wk, vec3 V, vec3 N, vec3 Li, Material material)
+{
+    // Wk is L
+    vec3 Kd = material.diffuse;
+    vec3 Ks = material.specular;
+    Kd = min(vec3(1.0) - Ks, Kd);
+    const float alpha = material.shininess;
+    
+
+    // G Term
+    vec3 H = normalize(Wk + V);
+    float alpha_square = alpha * alpha;
+    float G = G1(V, H, N, alpha_square) * G1(Wk, H, N, alpha_square);
+
+
+    // F Term
+    float LH = max(0.0, dot(Wk, H));
+    vec3 F = Ks + (vec3(1.0) - Ks) * pow((1 - LH), 5);
+
+    float NV = max(0.0, dot(N, V));
+    float WkN = max(0.0, dot(Wk, N));
+
+    // cosTheta or N . Wk (Omega_k)
+    float NL = max(0.0, dot(N, Wk));
+
+    return (G * F * Li * NL) 
+            / 4.0 * (WkN) * (NV);
 }

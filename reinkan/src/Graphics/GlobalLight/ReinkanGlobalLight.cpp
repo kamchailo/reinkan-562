@@ -281,6 +281,7 @@ namespace Reinkan::Graphics
             appGlobalLightHDRImageWraps.push_back(irrTextureImageWrap);
         }
 
+        /*
         // Build Hammersley BufferWrap
         int kk;
         int pos = 0;
@@ -297,6 +298,7 @@ namespace Reinkan::Graphics
             std::printf("%2d: %f\n", k, u);
         }
         //std::printf("=============================================\n");
+        */
 	}
 
 	void ReinkanApp::RecordGlobalLightPass(VkCommandBuffer commandBuffer, uint32_t imageIndex)
@@ -310,7 +312,7 @@ namespace Reinkan::Graphics
 
         // Order match attachments
         std::array<VkClearValue, 1> clearValues{};
-        clearValues[0].color = { {1.0f, 0.0f, 0.0f, 1.0f} };
+        clearValues[0].color = { {1.0f, 0.0f, 0.0f, 0.0f} };
 
         renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         renderPassBeginInfo.pClearValues = clearValues.data();
@@ -343,6 +345,7 @@ namespace Reinkan::Graphics
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
             PushConstantGlobalLight pushConstant;
+            pushConstant.cameraPosition = glm::vec4(appMainCamera->GetPosition(), 1.0);
             pushConstant.screenExtent = glm::vec2(appSwapchainExtent.width, appSwapchainExtent.height);
             pushConstant.distributionNumber = 20;
             pushConstant.IBLTextureIndex = appDebugInt;

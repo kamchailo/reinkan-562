@@ -113,6 +113,7 @@ struct PushConstantPost
 
 struct PushConstantGlobalLight
 {
+    vec4	cameraPosition;
     vec2    screenExtent;
 	uint	distributionNumber;
 	uint	IBLTextureIndex;

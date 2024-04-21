@@ -25,7 +25,7 @@ namespace Reinkan::Graphics
             std::vector<ModelData> modelDatas;
 
             //Reinkan::ModelData model;
-            glm::mat4 modelTr = glm::mat4(1);
+            glm::mat4 modelTr = glm::mat4(1.0f);
             /*modelTr = glm::scale(modelTr, glm::vec3(0.3));
             modelTr = glm::translate(modelTr, glm::vec3(18.0f, 18.0f, 1.5f));
             modelTr = glm::rotate(modelTr, glm::radians(90.0f), glm::vec3(0,0,1));*/
@@ -36,11 +36,53 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppTexturePool(),
                 vulkanApp->GetAppMaterialPool().size());
 
-            modelTr = glm::scale(modelTr, glm::vec3(0.3));
-            modelTr = glm::rotate(modelTr, 0.5f, glm::vec3(0, 1, 0));
-            modelTr = glm::translate(modelTr, glm::vec3(0.0f, 1.0f, 0.0f));
+            modelTr = glm::mat4(1);
+            modelTr = glm::scale(modelTr, glm::vec3(2.0f));
+            ReadAssimpFile("../assets/models/plane.obj",
+                modelTr,
+                modelDatas,
+                vulkanApp->GetAppMaterialPool(),
+                vulkanApp->GetAppTexturePool(),
+                vulkanApp->GetAppMaterialPool().size());
 
+            modelTr = glm::mat4(1);
+            modelTr = glm::scale(modelTr, glm::vec3(0.3f));
+            modelTr = glm::rotate(modelTr, 0.5f, glm::vec3(0, 1, 0));
+            modelTr = glm::translate(modelTr, glm::vec3(0.0f, 1.5f, 0.0f));
             ReadAssimpFile("../assets/models/smoothSphere.obj",
+                modelTr,
+                modelDatas,
+                vulkanApp->GetAppMaterialPool(),
+                vulkanApp->GetAppTexturePool(),
+                vulkanApp->GetAppMaterialPool().size());
+            
+            modelTr = glm::mat4(1);
+            modelTr = glm::scale(modelTr, glm::vec3(0.3f));
+            modelTr = glm::rotate(modelTr, 0.0f, glm::vec3(0, 1, 0));
+            modelTr = glm::translate(modelTr, glm::vec3(3.0f, 1.5f, 0.0f));
+            ReadAssimpFile("../assets/models/halfShinySphere.obj",
+                modelTr,
+                modelDatas,
+                vulkanApp->GetAppMaterialPool(),
+                vulkanApp->GetAppTexturePool(),
+                vulkanApp->GetAppMaterialPool().size());
+
+            modelTr = glm::mat4(1);
+            modelTr = glm::scale(modelTr, glm::vec3(0.3f));
+            modelTr = glm::rotate(modelTr, 0.0f, glm::vec3(0, 1, 0));
+            modelTr = glm::translate(modelTr, glm::vec3(6.0f, 1.5f, 0.0f));
+            ReadAssimpFile("../assets/models/shinySphere.obj",
+                modelTr,
+                modelDatas,
+                vulkanApp->GetAppMaterialPool(),
+                vulkanApp->GetAppTexturePool(),
+                vulkanApp->GetAppMaterialPool().size());
+
+            modelTr = glm::mat4(1);
+            modelTr = glm::scale(modelTr, glm::vec3(0.3f));
+            modelTr = glm::rotate(modelTr, 0.0f, glm::vec3(0, 1, 0));
+            modelTr = glm::translate(modelTr, glm::vec3(-3.0f, 1.5f, 0.0f));
+            ReadAssimpFile("../assets/models/metalSphere.obj",
                 modelTr,
                 modelDatas,
                 vulkanApp->GetAppMaterialPool(),
@@ -56,7 +98,6 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppMaterialPool().size());
             
 
-            */
             //ModelData sponza;
             ReadAssimpFile("../assets/models/sponza.obj",
             
@@ -65,6 +106,7 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppMaterialPool(),
                 vulkanApp->GetAppTexturePool(),
                 vulkanApp->GetAppMaterialPool().size());
+            */
  
             for (int i = 0; i < modelDatas.size(); ++i)
             {
@@ -78,13 +120,13 @@ namespace Reinkan::Graphics
 
             //vulkanApp->AppendLight({ glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0,0.9,1.0), 1.0, 1.0 });
             
-            float space = 0.025f;
+            float space = 0.25f;
 
             int width = 2;
             
             float colorOffset = (1.0f / width);
 
-            glm::vec3 positionOffset{ -width * space / 2.0f, 0.0f, -width * space / 2.0f};
+            glm::vec3 positionOffset{ -width * space / 2.0f, 0.1f, -width * space / 2.0f};
 
             for (int i = 0; i < width; ++i)
             {
@@ -95,14 +137,14 @@ namespace Reinkan::Graphics
                     //randOffsetX = 0;
                     //randOffsetZ = 0;
 
-                    glm::vec3 position{ i * space + randOffsetX, -0.02f, j * space + randOffsetZ };
+                    glm::vec3 position{ i * space + randOffsetX, 0.0f, j * space + randOffsetZ };
 
                     glm::vec3 color{ 1.0, 1.0, 0.5 };
                     color.r -= i * colorOffset;
                     color.g -= j * colorOffset;
 
-                    float intensity = 1.0f;
-                    float radius = 0.05f;
+                    float intensity = 0.05f;
+                    float radius = 0.5f;
 
                     vulkanApp->AppendLight({ positionOffset + position, color, intensity, radius });
                 }

@@ -36,6 +36,7 @@ void main()
     vec3 position   = texture(positionMap, uv).rgb;
     vec3 normal     = texture(normalMap, uv).rgb;
     vec3 specular   = texture(specularMap, uv).rgb;
+    float alpha     = texture(specularMap, uv).a;
 
     LightObject currentLight = globalLights[lightIndex];
 
@@ -64,7 +65,7 @@ void main()
     Material pixelMaterial;
     pixelMaterial.diffuse = albedo;
     pixelMaterial.specular = specular;
-    pixelMaterial.shininess = pushConstant.debugFloat;
+    pixelMaterial.shininess = alpha;
 
     vec3 V = normalize(pushConstant.cameraPosition.xyz - position);
 

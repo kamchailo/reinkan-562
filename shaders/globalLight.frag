@@ -3,6 +3,7 @@
 #extension GL_EXT_nonuniform_qualifier : enable
 
 #include "SharedStruct.glsl"
+#include "hammersley.glsl"
 
 layout(push_constant) uniform PushConstantGlobalLight_T
 {
@@ -54,7 +55,7 @@ void main()
     float depth = texture(positionMap, screenUV).a;
     
     // SkySphere
-    if(depth > 100.0)
+    if(depth > 200.0)
     {
         vec3 viewDir = -normalize(pushConstant.cameraPosition.xyz - position);
 
@@ -70,15 +71,6 @@ void main()
     vec3 Kd = texture(renderedImage,screenUV).rgb;
     vec3 Ks = texture(specularMap, screenUV).rgb;
     float alpha = texture(specularMap, screenUV).a;
-
-    float hammersleyNumber = HAMMERSLEY_NUMBER * 2;
-    vec2 hammersleySeq[HAMMERSLEY_NUMBER];
-    for(int i = 0; i < hammersleyNumber; i+=2)
-    {
-        float u = float(i) / hammersleyNumber;
-        float v = float(i + 1) / hammersleyNumber;
-        hammersleySeq[i / 2] = vec2(u,v);
-    }
 
     vec2 uv;
     uv.x = 0.5 - (atan(normal.z, normal.x) / (2.0 * PI));
@@ -105,7 +97,7 @@ void main()
 
     for(int i = 0; i < HAMMERSLEY_NUMBER; ++i)
     {   
-        vec2 hammersleyUV = hammersleySeq[i];
+        vec2 hammersleyUV = hammersleySequence[i];
 
         float theta = atan((alpha * sqrt(hammersleyUV.y)) / sqrt(1.0 - hammersleyUV.y));
         hammersleyUV = vec2(hammersleyUV.x, theta / PI);
@@ -116,6 +108,7 @@ void main()
         vec3 L = vec3(cos(twoPi_HalfU) * sinPiV, 
                       sin(twoPi_HalfU) * sinPiV, 
                       cos(piV));
+        L = normalize(L);
 
         vec3 Wk = normalize(L.x * A + L.y * B + L.z * R);
 
@@ -126,8 +119,10 @@ void main()
         float alpha_square = alpha * alpha;
         float D = clamp(mN, 0.0, 1.0) * alpha_square
                     / (PI * pow(mN, 4) * pow(alpha_square + tan_square_theta_m, 2));
-        float level = (0.5 * log2(HDR_WIDTH * HDR_HEIGHT / HAMMERSLEY_NUMBER)) - (0.25 * log2(D)) - 1;
 
+
+        // Level
+        float level = (0.5 * log2(HDR_WIDTH * HDR_HEIGHT / HAMMERSLEY_NUMBER)) - (0.25 * log2(D)) - 1;
         level = max(0.0, level);
 
         uv.x = 0.5 - (atan(-Wk.z, Wk.x) / (2.0 * PI));

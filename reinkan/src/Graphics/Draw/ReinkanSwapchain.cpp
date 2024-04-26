@@ -179,6 +179,8 @@ namespace Reinkan::Graphics
         CreateGlobalLightFrameBuffers();
         // Recreate DeferredLight FrameBuffers
         CreateDeferredLightFrameBuffers();
+        // Recreate AmbientOcclusion FrameBuffers
+        CreateAOFrameBuffers();
 
         // Rebind Descriptor for Scanline
         //appScanlineDescriptorWrap.Write(appDevice, 4, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
@@ -229,6 +231,8 @@ namespace Reinkan::Graphics
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appDeferredLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
         //Global Light
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appGlobalLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Ambient Occlusion
+
     }
 
     void ReinkanApp::CleanupSwapchain()
@@ -276,6 +280,10 @@ namespace Reinkan::Graphics
             // DeferredLight
             appDeferredLightingRenderTargetImageWraps[i].Destroy(appDevice);
             vkDestroyFramebuffer(appDevice, appDeferredLightFrameBuffers[i], nullptr);
+
+            // AmbientOcclusion
+            appAORenderTargetImageWraps[i].Destroy(appDevice);
+            vkDestroyFramebuffer(appDevice, appAOFrameBuffers[i], nullptr);
         }
 
         appScanlineImageWraps.clear();

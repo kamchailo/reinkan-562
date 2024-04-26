@@ -281,24 +281,6 @@ namespace Reinkan::Graphics
             appGlobalLightHDRImageWraps.push_back(irrTextureImageWrap);
         }
 
-        /*
-        // Build Hammersley BufferWrap
-        int kk;
-        int pos = 0;
-        int hammersleyNumber = 23;
-
-        std::vector<float> hammersleySequence;
-
-        //std::printf("=============================================\n");
-        //std::printf("Hammersley Sequence\n");
-        for (int k = 0; k < hammersleyNumber * 2; ++k)
-        {
-            float u = static_cast<float>(k) / (hammersleyNumber * 2); // First component (uniformly spaced)
-            hammersleySequence.push_back(u);
-            std::printf("%2d: %f\n", k, u);
-        }
-        //std::printf("=============================================\n");
-        */
 	}
 
 	void ReinkanApp::RecordGlobalLightPass(VkCommandBuffer commandBuffer, uint32_t imageIndex)

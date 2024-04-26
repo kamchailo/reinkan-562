@@ -809,7 +809,7 @@ namespace Reinkan::Graphics
 
         void CreateShadowBlurResources();
 
-        void CreateShadowCommandBuffer();
+        void CreatePreComputeCommandBuffer();
 
         void CreateShadowSyncObjects();
 
@@ -854,7 +854,7 @@ namespace Reinkan::Graphics
         std::vector<BufferWrap>         appShadowBlurUBO;
         std::vector<void*>              appShadowBlurUBOMapped; // Address to Buffer | HOST_VISIBLE
 
-        std::vector<VkCommandBuffer>    appShadowCommandBuffer; // Command Buffer on Graphics Queue
+        std::vector<VkCommandBuffer>    appPreComputeCommandBuffer; // Command Buffer on Graphics Queue
 
         // Semaphores for Shadow Pass
         std::vector<VkSemaphore>        appPreComputeFinishedSemaphores;
@@ -864,6 +864,39 @@ namespace Reinkan::Graphics
         std::vector<VkFence>            appComputeShadowBlurFences;
 
         std::vector<BufferWrap>         appShadowBlurBlocks;
+
+    // ReinkanAmbientOcclusion.cpp
+        void CreateAORenderPass();
+
+        void CreateAOFrameBuffers();
+
+        void CreateAODescriptorSetWrap();
+
+        void CreateAOPipeline(DescriptorWrap descriptorWrap);
+
+        //void CreateAOResources();
+
+        void CreateAOBlurDescriptorSetWrap();
+
+        void CreateAOBlurHorizontalPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateAOBlurVerticalPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateAOBlurResources();
+
+        void DestroyAOResources();
+
+        VkRenderPass                    appAORenderPass;
+
+        std::vector<VkFramebuffer>      appAOFrameBuffers;
+
+        std::vector<ImageWrap>          appAORenderTargetImageWraps;
+
+        std::vector<ImageWrap>          appBlurAOMapImageWraps;
+
+        DescriptorWrap                  appAODescriptorWrap;
+        VkPipeline                      appAOPipeline;
+        VkPipelineLayout                appAOPipelineLayout;
 
     };
 }

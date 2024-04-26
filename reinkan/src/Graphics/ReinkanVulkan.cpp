@@ -44,6 +44,8 @@ namespace Reinkan::Graphics
 
 		CreateDeferredLightingRenderPass();
 
+		CreateAORenderPass();
+
 		// MultiSampling
 		CreateSwapchainColorResources();
 
@@ -54,13 +56,14 @@ namespace Reinkan::Graphics
 
 		CreateShadowBlurResources();
 
-		CreateShadowCommandBuffer();
+		CreatePreComputeCommandBuffer();
 
 		CreateShadowSyncObjects();
 
 		// From VolumetricLighting
 		CreateVLightResources(appShadowMapWidth, appShadowMapHeight);
 
+		// Frame Buffer
 		CreateSwapchainFrameBuffers(); // require renderpass and resources
 		
 		CreateScanlineFrameBuffers();
@@ -72,6 +75,8 @@ namespace Reinkan::Graphics
 		CreateGlobalLightFrameBuffers();
 
 		CreateDeferredLightFrameBuffers();
+
+		CreateAOFrameBuffers();
 
 		// Resources Binding will happen after this point
 	}
@@ -122,6 +127,11 @@ namespace Reinkan::Graphics
 		CreateDeferredLightDescriptorSetWrap();
 
 		CreateDeferredLightPipeline(appDeferredLightDescriptorWrap);
+
+		// Ambient Occlusion
+		CreateAODescriptorSetWrap();
+
+		CreateAOPipeline(appAODescriptorWrap);
 
 		// Post Processing
 		CreatePostDescriptorSetWrap();

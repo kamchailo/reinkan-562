@@ -124,6 +124,16 @@ struct PushConstantGlobalLight
     float   debugFloat3;
 };
 
+struct PushConstantAO
+	{
+		vec2 	screenExtent;
+        uint    aoRange;
+        uint    debugFlag;
+		float   debugFloat;
+		float   debugFloat2;
+		float   debugFloat3;
+	};
+
 vec3 colorSample[8] = {vec3(1.0, 0.0, 0.0), 
                         vec3(1.0, 1.0, 0.0), 
                         vec3(0.0, 1.0, 0.0), 

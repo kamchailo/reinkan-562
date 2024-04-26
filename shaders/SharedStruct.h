@@ -182,6 +182,15 @@ namespace Reinkan
 		alignas(4) float   		debugFloat;
 		alignas(4) float   		debugFloat2;
 		alignas(4) float   		debugFloat3;
+	};
 
+	struct PushConstantAO
+	{
+		alignas(8) glm::vec2 	screenExtent;
+		alignas(4) uint32_t		aoRange;
+		alignas(4) uint32_t    	debugFlag;
+		alignas(4) float   		debugFloat;
+		alignas(4) float   		debugFloat2;
+		alignas(4) float   		debugFloat3;
 	};
 }

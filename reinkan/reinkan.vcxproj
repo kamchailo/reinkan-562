@@ -219,6 +219,7 @@ call "compile.bat"</Command>
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Camera\Camera.cpp" />
     <ClCompile Include="src\Camera\ReinkanCamera.cpp" />
+    <ClCompile Include="src\Graphics\AmbientOcclusion\ReinkanAmbientOcclusion.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanComputeClusteredCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanComputeParticleCleanup.cpp" />
     <ClCompile Include="src\Graphics\Cleanup\ReinkanDebugCleanup.cpp" />

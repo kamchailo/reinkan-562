@@ -60,19 +60,20 @@ namespace Reinkan::Graphics
         
         vkResetFences(appDevice, 1, &appRenderShadowFences[appCurrentFrame]);
 
-        vkResetCommandBuffer(appShadowCommandBuffer[appCurrentFrame], 0);
+        vkResetCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame], 0);
         VkCommandBufferBeginInfo beginShadowInfo{};
         beginShadowInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        if (vkBeginCommandBuffer(appShadowCommandBuffer[appCurrentFrame], &beginShadowInfo) != VK_SUCCESS)
+        if (vkBeginCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame], &beginShadowInfo) != VK_SUCCESS)
         { throw std::runtime_error("failed to begin recording command buffer!"); }
         // --------------------
         // Pre Compute . . .
         // --------------------
         {
-            RecordShadowPass(appShadowCommandBuffer[appCurrentFrame], appCurrentFrame);
+            RecordShadowPass(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
             
+            RecordScanline(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
         }
-        if (vkEndCommandBuffer(appShadowCommandBuffer[appCurrentFrame]) != VK_SUCCESS)
+        if (vkEndCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame]) != VK_SUCCESS)
         { throw std::runtime_error("failed to record command buffer!"); }
 
         //VkSemaphore computeWaitSemaphores[] = { };
@@ -82,7 +83,7 @@ namespace Reinkan::Graphics
         VkSubmitInfo submitPreComputeInfo{};
         submitPreComputeInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitPreComputeInfo.commandBufferCount = 1;
-        submitPreComputeInfo.pCommandBuffers = &appShadowCommandBuffer[appCurrentFrame];
+        submitPreComputeInfo.pCommandBuffers = &appPreComputeCommandBuffer[appCurrentFrame];
         submitPreComputeInfo.waitSemaphoreCount = 0;
         submitPreComputeInfo.pWaitSemaphores = {};
         submitPreComputeInfo.signalSemaphoreCount = 1;
@@ -182,7 +183,6 @@ namespace Reinkan::Graphics
             // RecordShadowPass move to pre compute
             //RecordShadowPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
-            RecordScanline(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
             RecordGlobalLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 

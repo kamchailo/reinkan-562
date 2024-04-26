@@ -91,7 +91,9 @@ void main()
     {
         // normalMap = (normalMap * 2.0) - 1.0;
         N = normalize(TBNMatrix * normalMap);
-        // N.y = -N.y;
+        // float sign = N.y / abs(N.y);
+        // N.y = sign * (1.0 - abs(N.y));
+        N.x = -N.x;
         // outColor = vec4(1,0,0,1);
         // return;
     }

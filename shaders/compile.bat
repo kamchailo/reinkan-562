@@ -10,6 +10,9 @@ C:/VulkanSDK/1.3.231.1/Bin/glslc.exe shadowBlurVertical.comp -o shadowBlurVertic
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe vlight.vert -o vlight.vert.spv
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe vlight.frag -o vlight.frag.spv
 
+C:/VulkanSDK/1.3.231.1/Bin/glslc.exe globalLight.vert -o globalLight.vert.spv
+C:/VulkanSDK/1.3.231.1/Bin/glslc.exe globalLight.frag -o globalLight.frag.spv
+
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe deferredlight.vert -o deferredlight.vert.spv
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe deferredlight.frag -o deferredlight.frag.spv
 

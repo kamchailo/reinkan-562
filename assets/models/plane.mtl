@@ -2,14 +2,11 @@
 # www.blender.org
 
 newmtl Material
-Ns 250.000000
+Ns 0.003000
 Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.800000 0.800000
-Ks 0.500000 0.500000 0.500000
+Kd 0.300000 0.300000 0.300000
+Ks 0.700000 0.700000 0.700000
 Ke 0.000000 0.000000 0.000000
-Ni 1.450000
+Ni 0.000000
 d 1.000000
 illum 2
-map_Kd ceiling-flower_feb-26-2022_basecolor.png
-map_Kn ceiling-flower_feb-26-2022_normal.png
-map_bump ceiling-flower_feb-26-2022_height.png

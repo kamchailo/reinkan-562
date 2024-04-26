@@ -171,27 +171,35 @@ namespace Reinkan::Graphics
         CreateSwapchainDepthResource();
         CreateSwapchainFrameBuffers();
 
-        // Have to recreate because shared depth
-        CreateShadowFrameBuffers();
         // Recreate Scanline FrameBuffers
         CreateScanlineFrameBuffers();
         // Recreate VLight FrameBuffers
         CreateVLightFrameBuffers();
+        // Recreate GlobalLight FrameBuffers
+        CreateGlobalLightFrameBuffers();
         // Recreate DeferredLight FrameBuffers
         CreateDeferredLightFrameBuffers();
 
         // Rebind Descriptor for Scanline
-        appScanlineDescriptorWrap.Write(appDevice, 4, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        //appScanlineDescriptorWrap.Write(appDevice, 4, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
 
         // Rebind Compute Shadow Blur
-        appShadowBlurDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        //appShadowBlurDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
 
         // Rebind Descriptor for VLight
         appVLightDescriptorWrap.Write(appDevice, 1, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
         appVLightDescriptorWrap.Write(appDevice, 2, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
 
-        // Rebind Descriptor for DeferredLight
+        // Rebind Descriptor for GlobalLight
         uint32_t bindingIndex = 0;
+        appGlobalLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appGlobalLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlinePositionImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appGlobalLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appGlobalLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appGlobalLightDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+
+        // Rebind Descriptor for DeferredLight
+        bindingIndex = 0;
         appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineUBO);
         appDeferredLightDescriptorWrap.Write(appDevice, bindingIndex++, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
 
@@ -219,6 +227,8 @@ namespace Reinkan::Graphics
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appDeferredLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
+        //Global Light
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appGlobalLightingRenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
     }
 
     void ReinkanApp::CleanupSwapchain()
@@ -234,7 +244,6 @@ namespace Reinkan::Graphics
         }
 
         appMsaaImageWrap.Destroy(appDevice);
-
         appSwapchainDepthImageWrap.Destroy(appDevice);
 
         vkDestroySwapchainKHR(appDevice, appSwapchain, nullptr);
@@ -256,13 +265,13 @@ namespace Reinkan::Graphics
             // Scanline FrameBuffers
             vkDestroyFramebuffer(appDevice, appScanlineFrameBuffers[i], nullptr);
 
-            // Shadow
-            appShadowMapImageWraps[i].Destroy(appDevice);
-            vkDestroyFramebuffer(appDevice, appShadowFrameBuffers[i], nullptr);
-
             // VLight
             appVLightingRenderTargetImageWraps[i].Destroy(appDevice);
             vkDestroyFramebuffer(appDevice, appVLightFrameBuffers[i], nullptr);
+
+            // GlobalLight
+            appGlobalLightingRenderTargetImageWraps[i].Destroy(appDevice);
+            vkDestroyFramebuffer(appDevice, appGlobalLightFrameBuffers[i], nullptr);
 
             // DeferredLight
             appDeferredLightingRenderTargetImageWraps[i].Destroy(appDevice);
@@ -273,8 +282,8 @@ namespace Reinkan::Graphics
         appScanlinePositionImageWraps.clear();
         appScanlineNormalImageWraps.clear();
         appScanlineSpecularImageWraps.clear();
-        appShadowMapImageWraps.clear();
         appVLightingRenderTargetImageWraps.clear();
+        appGlobalLightingRenderTargetImageWraps.clear();
         appDeferredLightingRenderTargetImageWraps.clear();
     }
 }

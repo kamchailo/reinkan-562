@@ -53,7 +53,7 @@ void main()
     vertexTangent = normalize((normalTransform * vec4(inVertexTangent, 1.0))).rgb;
     vertexBitangent = normalize((normalTransform * vec4(inVertexBitangent, 1.0))).rgb;
 
-    mat3 TBN = transpose(mat3(vertexTangent, vertexBitangent, vertexNormal));
+    mat3 TBN = mat3(vertexTangent, vertexBitangent, vertexNormal);
 
     viewDir = vec3(eye - worldPos);
     fragTexCoord = inTexCoord;

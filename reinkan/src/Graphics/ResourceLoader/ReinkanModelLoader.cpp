@@ -99,7 +99,7 @@ namespace Reinkan::Graphics
             else 
             {
                 ////////////////////////////////////////////////
-                // Read material from mtl and make own material
+                // Read material from mtl and make own material 
                 ////////////////////////////////////////////////
                 glm::vec3 Kd(0.5f, 0.5f, 0.5f);
                 glm::vec3 Ks(0.03f, 0.03f, 0.03f);

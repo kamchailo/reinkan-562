@@ -40,6 +40,8 @@ namespace Reinkan::Graphics
 
 		CreateVLightingRenderPass();
 
+		CreateGlobalLightRenderPass();
+
 		CreateDeferredLightingRenderPass();
 
 		// MultiSampling
@@ -56,7 +58,7 @@ namespace Reinkan::Graphics
 
 		CreateShadowSyncObjects();
 
-		// From VolumicLighting
+		// From VolumetricLighting
 		CreateVLightResources(appShadowMapWidth, appShadowMapHeight);
 
 		CreateSwapchainFrameBuffers(); // require renderpass and resources
@@ -66,6 +68,8 @@ namespace Reinkan::Graphics
 		CreateShadowFrameBuffers();
 
 		CreateVLightFrameBuffers();
+
+		CreateGlobalLightFrameBuffers();
 
 		CreateDeferredLightFrameBuffers();
 
@@ -107,7 +111,14 @@ namespace Reinkan::Graphics
 
 		CreateScanlinePipeline(appScanlineDescriptorWrap);
 
-		// Deferred Lightinh
+		// Global Light
+		CreateGlobalLightResources();
+
+		CreateGlobalLightDescriptorSetWrap();
+
+		CreateGlobalLightPipeline(appGlobalLightDescriptorWrap);
+
+		// Deferred Lighting
 		CreateDeferredLightDescriptorSetWrap();
 
 		CreateDeferredLightPipeline(appDeferredLightDescriptorWrap);
@@ -126,9 +137,6 @@ namespace Reinkan::Graphics
 							VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 							VK_POLYGON_MODE_LINE,
 							1.0f);
-
-		// Dummy Pipeline
-		CreateDummyComputePipeline(100, 100);
 
 		std::printf("\n=============================== END OF BIND RESOURCES ===============================\n\n");
 		

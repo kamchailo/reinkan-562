@@ -14,9 +14,6 @@ namespace Reinkan::Graphics
 		// Debug
 		DestroyDebugResources();
 
-		// Dummy
-		DestroyDummyResources();
-
 		// Global Light
 		appClusteredGlobalLights.Destroy(appDevice);
 		appClusteredGlobalLights_DEBUG.Destroy(appDevice);
@@ -29,6 +26,9 @@ namespace Reinkan::Graphics
 
 		// VolumetricLighting
 		DestroyVLightResources();
+
+		// GlobalLight
+		DestroyGlobalLightResources();
 
 		// DeferredLighting
 		DestroyDeferredLightResources();

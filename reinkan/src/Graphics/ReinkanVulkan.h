@@ -884,6 +884,8 @@ namespace Reinkan::Graphics
 
         void CreateAOBlurResources();
 
+        void RecordAOPass(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
         void DestroyAOResources();
 
         VkRenderPass                    appAORenderPass;

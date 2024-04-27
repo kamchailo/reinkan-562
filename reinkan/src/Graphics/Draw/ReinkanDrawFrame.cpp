@@ -72,6 +72,9 @@ namespace Reinkan::Graphics
             RecordShadowPass(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
             
             RecordScanline(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
+
+            RecordAOPass(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
+
         }
         if (vkEndCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame]) != VK_SUCCESS)
         { throw std::runtime_error("failed to record command buffer!"); }

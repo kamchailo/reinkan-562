@@ -104,7 +104,7 @@ namespace Reinkan::Graphics
 
         ImGui::Checkbox("Show Shadow Map: ", &appImguiBool1);
 
-        ImGui::Checkbox("Show Blurred Shadow", &appImguiBool2);
+        ImGui::Checkbox("Show AO Map", &appImguiBool2);
 
         ImGui::Checkbox("Global Light Pass", &appImguiBool3);
         

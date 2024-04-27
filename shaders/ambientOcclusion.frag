@@ -23,5 +23,10 @@ layout(binding = 3) uniform sampler2D specularMap;
 
 void main()
 {
-    outColor = vec4(0.0, 0.7, 1.0, 1.0);
+    vec2 screenUV = gl_FragCoord.xy / pushConstant.screenExtent;
+    vec3 position = texture(positionMap, screenUV).xyz;
+    vec3 normal = texture(normalMap, screenUV).xyz;
+    float depth = texture(positionMap, screenUV).a;
+
+    outColor = vec4(0.0, 0.0, depth / 100.0, 1.0);
 }

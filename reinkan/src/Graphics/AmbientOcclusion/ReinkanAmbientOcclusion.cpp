@@ -226,6 +226,77 @@ namespace Reinkan::Graphics
         vkDestroyShaderModule(appDevice, vertShaderModule, nullptr);
     }
 
+    void ReinkanApp::RecordAOPass(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+    {
+        VkRenderPassBeginInfo renderPassBeginInfo{};
+        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassBeginInfo.renderPass = appAORenderPass;
+        renderPassBeginInfo.framebuffer = appAOFrameBuffers[imageIndex]; // Output to Swapchain // screen
+        renderPassBeginInfo.renderArea.offset = { 0, 0 };
+        renderPassBeginInfo.renderArea.extent = appSwapchainExtent;
+
+        // Order match attachments
+        std::array<VkClearValue, 1> clearValues{};
+        clearValues[0].color = { {1.0f, 0.0f, 0.0f, 0.0f} };
+
+        renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassBeginInfo.pClearValues = clearValues.data();
+
+        vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+        {
+            vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, appAOPipeline);
+
+            vkCmdBindDescriptorSets(commandBuffer,
+                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                appAOPipelineLayout,
+                0,
+                1,
+                &appAODescriptorWrap.descriptorSets[appCurrentFrame],
+                0,
+                nullptr);
+
+            VkViewport viewport{};
+            viewport.x = 0.0f;
+            viewport.y = 0.0f;
+            viewport.width = static_cast<float>(appSwapchainExtent.width);
+            viewport.height = static_cast<float>(appSwapchainExtent.height);
+            viewport.minDepth = 0.0f;
+            viewport.maxDepth = 1.0f;
+            vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+            VkRect2D scissor{};
+            scissor.offset = { 0, 0 };
+            scissor.extent = appSwapchainExtent;
+            vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+            PushConstantAO pushConstant;
+            //pushConstant.cameraPosition = glm::vec4(appMainCamera->GetPosition(), 1.0);
+            pushConstant.screenExtent = glm::vec2(appSwapchainExtent.width, appSwapchainExtent.height);
+            pushConstant.aoRange = 0.1f;
+            //pushConstant.IBLTextureIndex = appDebugInt;
+            //pushConstant.LODOffset = appDebugFloat3;
+            pushConstant.debugFlag = appDebugFlag;
+            pushConstant.debugFloat = appDebugFloat;
+            pushConstant.debugFloat2 = appDebugFloat2;
+            pushConstant.debugFloat3 = appDebugFloat3;
+
+
+            vkCmdPushConstants(commandBuffer,
+                appAOPipelineLayout,
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                0,
+                sizeof(PushConstantAO),
+                &pushConstant
+            );
+
+            // Draw Imaginary Vertices
+            /// Access vertex instances with gl_VertexIndex
+            vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+        }
+        vkCmdEndRenderPass(commandBuffer);
+    }
+
     void ReinkanApp::DestroyAOResources()
     {
         // Descriptor Set

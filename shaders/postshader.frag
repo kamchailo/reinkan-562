@@ -29,6 +29,8 @@ layout(binding = 7) uniform sampler2D globalLightRenderedImage;
 
 layout(binding = 8) uniform sampler2D blurShadow;
 
+layout(binding = 9) uniform sampler2D ambientOcclusionMap;
+
 void main()
 {
     vec2 uv = gl_FragCoord.xy/pushConstant.screenExtent;
@@ -42,7 +44,7 @@ void main()
     }
     if((pushConstant.debugFlag & 0x2) > 1)
     {
-        outColor = vec4(texture(blurShadow, uv).rgb, 1);
+        outColor = vec4(texture(ambientOcclusionMap, uv).rgb, 1);
         return;
     }
     if((pushConstant.debugFlag & 0x4) > 1)

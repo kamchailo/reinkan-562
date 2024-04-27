@@ -119,6 +119,7 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppMaterialPool(),
                 vulkanApp->GetAppTexturePool(),
                 vulkanApp->GetAppMaterialPool().size());
+            */
             
 
             //ModelData sponza;
@@ -129,7 +130,6 @@ namespace Reinkan::Graphics
                 vulkanApp->GetAppMaterialPool(),
                 vulkanApp->GetAppTexturePool(),
                 vulkanApp->GetAppMaterialPool().size());
-            */
  
             for (int i = 0; i < modelDatas.size(); ++i)
             {

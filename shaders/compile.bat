@@ -16,6 +16,9 @@ C:/VulkanSDK/1.3.231.1/Bin/glslc.exe globalLight.frag -o globalLight.frag.spv
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe ambientOcclusion.vert -o ambientOcclusion.vert.spv
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe ambientOcclusion.frag -o ambientOcclusion.frag.spv
 
+C:/VulkanSDK/1.3.231.1/Bin/glslc.exe aoBlurHorizontal.comp -o aoBlurHorizontal.comp.spv
+C:/VulkanSDK/1.3.231.1/Bin/glslc.exe aoBlurVertical.comp -o aoBlurVertical.comp.spv
+
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe deferredlight.vert -o deferredlight.vert.spv
 C:/VulkanSDK/1.3.231.1/Bin/glslc.exe deferredlight.frag -o deferredlight.frag.spv
 

@@ -60,6 +60,11 @@ namespace Reinkan::Graphics
 
 		CreateShadowSyncObjects();
 
+		// Ambient Occlusion
+		CreateAOBlurResources();
+
+		CreateAOBlurImageWraps();
+
 		// From VolumetricLighting
 		CreateVLightResources(appShadowMapWidth, appShadowMapHeight);
 
@@ -106,7 +111,7 @@ namespace Reinkan::Graphics
 		CreateShadowBlurHorizontalPipeline(appShadowBlurDescriptorWrap);
 		CreateShadowBlurVerticalPipeline(appShadowBlurDescriptorWrap);
 
-		// Volumic Light Shaft
+		// Volumetric Light Shaft
 		CreateVLightDescriptorSetWrap();
 
 		CreateVLightPipeline(appVLightDescriptorWrap);
@@ -132,6 +137,12 @@ namespace Reinkan::Graphics
 		CreateAODescriptorSetWrap();
 
 		CreateAOPipeline(appAODescriptorWrap);
+
+		CreateAOBlurDescriptorSetWrap();
+
+		CreateAOBlurHorizontalPipeline(appAOBlurDescriptorWrap);
+
+		CreateAOBlurVerticalPipeline(appAOBlurDescriptorWrap);
 
 		// Post Processing
 		CreatePostDescriptorSetWrap();

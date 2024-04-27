@@ -31,12 +31,14 @@ layout(binding = 8) uniform sampler2D blurShadow;
 
 layout(binding = 9) uniform sampler2D ambientOcclusionMap;
 
+layout(binding = 10) uniform sampler2D ambientOcclusionBlurMap;
+
 void main()
 {
     vec2 uv = gl_FragCoord.xy/pushConstant.screenExtent;
     vec4 colorPass = texture(globalLightRenderedImage, uv);
     float shadow = colorPass.a;
-    float ambientOcclision = texture(ambientOcclusionMap, uv).r;
+    float ambientOcclusion = texture(ambientOcclusionBlurMap, uv).r;
 
     if((pushConstant.debugFlag & 0x1) >= 1)
     {
@@ -50,7 +52,7 @@ void main()
     }
     if((pushConstant.debugFlag & 0x4) > 1)
     {
-        outColor = vec4(texture(globalLightRenderedImage, uv).rgb, 1);
+        outColor = vec4(texture(ambientOcclusionBlurMap, uv).rgb, 1);
         return;
     }
     if((pushConstant.debugFlag & 0x8) > 1)
@@ -71,7 +73,7 @@ void main()
     finalColor += texture(deferredImage, uv).rgb;
 
     // Add Ambient from ambientOcclusionMap
-    finalColor *= ambientOcclision;
+    finalColor *= ambientOcclusion + pushConstant.debugFloat2;
 
     outColor = vec4(finalColor, 1.0);
 

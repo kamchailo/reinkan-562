@@ -428,23 +428,24 @@ namespace Reinkan::Graphics
         {
             appAORenderTargetImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
                 appSwapchainExtent.height,
-                appSwapchainImageFormat,                                  // Image Format
+                VK_FORMAT_R32G32B32A32_SFLOAT,                                  // Image Format
                 VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
                 VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
                 | VK_IMAGE_USAGE_TRANSFER_DST_BIT
-                | VK_IMAGE_USAGE_SAMPLED_BIT,                                   // Image Usage
+                | VK_IMAGE_USAGE_SAMPLED_BIT
+                | VK_IMAGE_USAGE_STORAGE_BIT,                                   // Image Usage
                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
                 1,
                 appMsaaSamples);
 
             TransitionImageLayout(appAORenderTargetImageWraps[i].image,
-                appSwapchainImageFormat,
+                VK_FORMAT_R32G32B32A32_SFLOAT,
                 VK_IMAGE_LAYOUT_UNDEFINED,
                 VK_IMAGE_LAYOUT_GENERAL);
 
             appAORenderTargetImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
-            appAORenderTargetImageWraps[i].imageView = CreateImageView(appAORenderTargetImageWraps[i].image, appSwapchainImageFormat);
+            appAORenderTargetImageWraps[i].imageView = CreateImageView(appAORenderTargetImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
             appAORenderTargetImageWraps[i].sampler = CreateImageSampler();
         }
 
@@ -459,7 +460,7 @@ namespace Reinkan::Graphics
 
             VkFramebufferCreateInfo framebufferInfo{};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = appGlobalLightRenderPass;
+            framebufferInfo.renderPass = appAORenderPass;
             framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             framebufferInfo.pAttachments = attachments.data();
             framebufferInfo.width = appSwapchainExtent.width;

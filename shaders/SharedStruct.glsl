@@ -37,10 +37,19 @@ struct UniformBufferObject
     vec2 screenExtent;
 };
 
-struct ShadowBlurUniformBufferObject {
+struct ShadowBlurUniformBufferObject 
+{
     uint blurWidth;
     uint imageWidth;
     uint imageHeight;
+    uint _padding;
+};
+
+struct AOBlurUniformBufferObject 
+{
+    uint blurWidth;
+    uint screenWidth;
+    uint screenHeight;
     uint _padding;
 };
 

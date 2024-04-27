@@ -539,7 +539,7 @@ namespace Reinkan::Graphics
 
         uint32_t    appDebugFlag{ 0x0 };
         float       appDebugFloat{ 1.0f };
-        float       appDebugFloat2{ 1.0f };
+        float       appDebugFloat2{ 0.0f };
         float       appDebugFloat3{ 30.0f };
         int         appDebugInt{ 0 };
 
@@ -874,8 +874,6 @@ namespace Reinkan::Graphics
 
         void CreateAOPipeline(DescriptorWrap descriptorWrap);
 
-        //void CreateAOResources();
-
         void CreateAOBlurDescriptorSetWrap();
 
         void CreateAOBlurHorizontalPipeline(DescriptorWrap descriptorWrap);
@@ -883,6 +881,10 @@ namespace Reinkan::Graphics
         void CreateAOBlurVerticalPipeline(DescriptorWrap descriptorWrap);
 
         void CreateAOBlurResources();
+
+        void CreateAOBlurImageWraps();
+
+        void UpdateAOBlurUBO(uint32_t currentImage);
 
         void RecordAOPass(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
@@ -899,6 +901,16 @@ namespace Reinkan::Graphics
         DescriptorWrap                  appAODescriptorWrap;
         VkPipeline                      appAOPipeline;
         VkPipelineLayout                appAOPipelineLayout;
+
+        DescriptorWrap                  appAOBlurDescriptorWrap;
+        VkPipeline                      appAOBlurHorizontalPipeline;
+        VkPipelineLayout                appAOBlurHorizontalPipelineLayout;
+
+        VkPipeline                      appAOBlurVerticalPipeline;
+        VkPipelineLayout                appAOBlurVerticalPipelineLayout;
+
+        std::vector<BufferWrap>         appAOBlurUBO;
+        std::vector<void*>              appAOBlurUBOMapped; // Address to Buffer | HOST_VISIBLE
 
         float                           appAORange{ 0.2f };
         float                           appAOScale{ 2.0f };

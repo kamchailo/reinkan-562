@@ -576,7 +576,7 @@ namespace Reinkan::Graphics
         imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         imageCopyRegion.dstSubresource.layerCount = 1;
         imageCopyRegion.extent.width = imageWidth;
-        imageCopyRegion.extent.height = imageWidth;
+        imageCopyRegion.extent.height = imageHeight;
         imageCopyRegion.extent.depth = 1;
 
         CmdImageLayoutBarrier(commandBuffer, srcImage.image,

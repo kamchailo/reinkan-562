@@ -181,6 +181,8 @@ namespace Reinkan::Graphics
         CreateDeferredLightFrameBuffers();
         // Recreate AmbientOcclusion FrameBuffers
         CreateAOFrameBuffers();
+        CreateAOBlurImageWraps();
+        
 
         // Rebind Descriptor for Scanline
         //appScanlineDescriptorWrap.Write(appDevice, 4, appShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
@@ -235,6 +237,14 @@ namespace Reinkan::Graphics
             appAODescriptorWrap.Write(appDevice, bindingIndex++, appScanlineSpecularImageWraps, MAX_FRAMES_IN_FLIGHT);
         }
 
+        // Rebind Descriptor for AmbientOcclusion Blur
+        {
+            bindingIndex = 0;
+            appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appAOBlurUBO);
+            appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appAORenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
+            appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appBlurAOMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        }
+
         // Rebind Descriptor for Post Processing
         {
             bindingIndex = 0;
@@ -251,6 +261,7 @@ namespace Reinkan::Graphics
             appPostDescriptorWrap.Write(appDevice, bindingIndex++, appBlurShadowMapImageWraps, MAX_FRAMES_IN_FLIGHT);
             // Ambient Occlusion
             appPostDescriptorWrap.Write(appDevice, bindingIndex++, appAORenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
+            appPostDescriptorWrap.Write(appDevice, bindingIndex++, appBlurAOMapImageWraps, MAX_FRAMES_IN_FLIGHT);
         }
 
     }
@@ -304,6 +315,9 @@ namespace Reinkan::Graphics
             // AmbientOcclusion
             appAORenderTargetImageWraps[i].Destroy(appDevice);
             vkDestroyFramebuffer(appDevice, appAOFrameBuffers[i], nullptr);
+
+            // AmbientOcclusion Blur
+            appBlurAOMapImageWraps[i].Destroy(appDevice);
         }
 
         appScanlineImageWraps.clear();
@@ -313,5 +327,7 @@ namespace Reinkan::Graphics
         appVLightingRenderTargetImageWraps.clear();
         appGlobalLightingRenderTargetImageWraps.clear();
         appDeferredLightingRenderTargetImageWraps.clear();
+        appAORenderTargetImageWraps.clear();
+        appBlurAOMapImageWraps.clear();
     }
 }

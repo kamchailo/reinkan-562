@@ -57,6 +57,8 @@ namespace Reinkan::Graphics
         vkWaitForFences(appDevice, 1, &appRenderShadowFences[appCurrentFrame], VK_TRUE, UINT64_MAX);
 
         UpdateShadowUBO(appCurrentFrame); // Update shadow first for appShadowProjectionViewMatrix
+
+        UpdateAOBlurUBO(appCurrentFrame);
         
         vkResetFences(appDevice, 1, &appRenderShadowFences[appCurrentFrame]);
 
@@ -135,6 +137,30 @@ namespace Reinkan::Graphics
                                        appShadowBlurDescriptorWrap,
                                        appShadowMapWidth, appShadowMapHeight / 128, 1,
                                        false);
+            
+            // Horizontal AO Blur Compute Dispatch
+            RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
+                                       appAOBlurHorizontalPipeline,
+                                       appAOBlurHorizontalPipelineLayout,
+                                       appAOBlurDescriptorWrap,
+                                       appSwapchainExtent.width / 128, appSwapchainExtent.height, 1,
+                                       true);
+            
+            CmdCopyImage(appComputeCommandBuffers[appCurrentFrame],
+                         appBlurAOMapImageWraps[appCurrentFrame],
+                         appAORenderTargetImageWraps[appCurrentFrame],
+                         appSwapchainExtent.width,
+                         appSwapchainExtent.height);
+            
+
+            // Vertical AO Blur Compute Dispatch
+            RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
+                                       appAOBlurVerticalPipeline,
+                                       appAOBlurVerticalPipelineLayout,
+                                       appAOBlurDescriptorWrap,
+                                       appSwapchainExtent.width, appSwapchainExtent.height / 128, 1,
+                                       false);
+            
             
             // IBL Compute Dispatch
         }

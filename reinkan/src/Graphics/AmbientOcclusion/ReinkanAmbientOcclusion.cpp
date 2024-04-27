@@ -7,8 +7,8 @@ namespace Reinkan::Graphics
 	void ReinkanApp::CreateAORenderPass()
 	{
         VkAttachmentDescription colorAttachment{};
-        colorAttachment.format = appSwapchainImageFormat;
-        colorAttachment.samples = appMsaaSamples;
+        colorAttachment.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -226,6 +226,177 @@ namespace Reinkan::Graphics
         vkDestroyShaderModule(appDevice, vertShaderModule, nullptr);
     }
 
+    void ReinkanApp::CreateAOBlurDescriptorSetWrap()
+    {
+        std::vector<VkDescriptorSetLayoutBinding> bindingTable;
+        uint32_t bindingIndex = 0;
+
+        // UBO
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                  bindingIndex++,                       // binding;
+                                  VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,    // descriptorType;
+                                  1,                                    // descriptorCount; 
+                                  VK_SHADER_STAGE_COMPUTE_BIT });       // stageFlags;
+
+        // AOImageWrap
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                       // binding;
+                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,     // descriptorType;
+                                      2,                                    // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_COMPUTE_BIT });       // stageFlags;
+
+        // appBlurAOMapImageWraps
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                       // binding;
+                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,     // descriptorType;
+                                      2,                                    // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_COMPUTE_BIT });       // stageFlags;
+
+        /*
+        *
+        * Binding Resources
+        * - Gaussian Blur Array
+        * - Source Images
+        * - Destination Images
+        *
+        */
+        appAOBlurDescriptorWrap.SetBindings(appDevice, bindingTable, MAX_FRAMES_IN_FLIGHT);
+
+        bindingIndex = 0;
+        appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appAOBlurUBO);
+        appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appAORenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
+        appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appBlurAOMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+    }
+
+    void ReinkanApp::CreateAOBlurHorizontalPipeline(DescriptorWrap descriptorWrap)
+    {
+        auto computeShaderCode = ReadFile("../shaders/aoBlurHorizontal.comp.spv");
+
+        VkShaderModule computeShaderModule = CreateShaderModule(computeShaderCode);
+
+        VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
+        computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        computeShaderStageInfo.module = computeShaderModule;
+        computeShaderStageInfo.pName = "main";
+
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 1;
+        pipelineLayoutInfo.pSetLayouts = &descriptorWrap.descriptorSetLayout;
+
+        if (vkCreatePipelineLayout(appDevice, &pipelineLayoutInfo, nullptr, &appAOBlurHorizontalPipelineLayout) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create compute pipeline layout!");
+        }
+
+        VkComputePipelineCreateInfo pipelineInfo{};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineInfo.layout = appAOBlurHorizontalPipelineLayout;
+        pipelineInfo.stage = computeShaderStageInfo;
+
+        if (vkCreateComputePipelines(appDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &appAOBlurHorizontalPipeline) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create compute pipeline!");
+        }
+
+        vkDestroyShaderModule(appDevice, computeShaderModule, nullptr);
+    }
+
+    void ReinkanApp::CreateAOBlurVerticalPipeline(DescriptorWrap descriptorWrap)
+    {
+        auto computeShaderCode = ReadFile("../shaders/aoBlurVertical.comp.spv");
+
+        VkShaderModule computeShaderModule = CreateShaderModule(computeShaderCode);
+
+        VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
+        computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+        computeShaderStageInfo.module = computeShaderModule;
+        computeShaderStageInfo.pName = "main";
+
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.setLayoutCount = 1;
+        pipelineLayoutInfo.pSetLayouts = &descriptorWrap.descriptorSetLayout;
+
+        if (vkCreatePipelineLayout(appDevice, &pipelineLayoutInfo, nullptr, &appAOBlurVerticalPipelineLayout) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create compute pipeline layout!");
+        }
+
+        VkComputePipelineCreateInfo pipelineInfo{};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineInfo.layout = appAOBlurVerticalPipelineLayout;
+        pipelineInfo.stage = computeShaderStageInfo;
+
+        if (vkCreateComputePipelines(appDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &appAOBlurVerticalPipeline) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create compute pipeline!");
+        }
+
+        vkDestroyShaderModule(appDevice, computeShaderModule, nullptr);
+    }
+
+    void ReinkanApp::CreateAOBlurResources()
+    {
+        // UBO [MAX_FRAMES_IN_FLIGHT]
+        VkDeviceSize bufferSize = sizeof(AOBlurUniformBufferObject);
+        appAOBlurUBO.resize(MAX_FRAMES_IN_FLIGHT);
+        appAOBlurUBOMapped.resize(MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+        {
+            appAOBlurUBO[i] = CreateBufferWrap(bufferSize,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+            vkMapMemory(appDevice, appAOBlurUBO[i].memory, 0, bufferSize, 0, &appAOBlurUBOMapped[i]);
+        }
+    }
+
+    void ReinkanApp::CreateAOBlurImageWraps()
+    {
+        // Blurred Shadow Map
+        appBlurAOMapImageWraps.resize(MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+        {
+            appBlurAOMapImageWraps[i] = CreateImageWrap(appSwapchainExtent.width,
+                appSwapchainExtent.height,
+                VK_FORMAT_R32G32B32A32_SFLOAT,                                  // Image Format
+                VK_IMAGE_TILING_OPTIMAL,                                        // Image Tilling
+                VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT                             // As a result for render
+                | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+                | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+                | VK_IMAGE_USAGE_SAMPLED_BIT
+                | VK_IMAGE_USAGE_STORAGE_BIT,                                   // Image Usage
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,                            // Memory Property
+                1,
+                appMsaaSamples);
+
+            TransitionImageLayout(appBlurAOMapImageWraps[i].image,
+                VK_FORMAT_R32G32B32A32_SFLOAT,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_GENERAL);
+
+            appBlurAOMapImageWraps[i].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+            appBlurAOMapImageWraps[i].imageView = CreateImageView(appBlurAOMapImageWraps[i].image, VK_FORMAT_R32G32B32A32_SFLOAT);
+            appBlurAOMapImageWraps[i].sampler = CreateImageSampler();
+        }
+    }
+
+    void ReinkanApp::UpdateAOBlurUBO(uint32_t currentImage)
+    {
+
+        AOBlurUniformBufferObject ubo{};
+
+        ubo.blurWidth = 100;
+        ubo.screenWidth = appSwapchainExtent.width;
+        ubo.screenHeight = appSwapchainExtent.height;
+
+        // CPU to update buffer req: VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+        memcpy(appAOBlurUBOMapped[currentImage], &ubo, sizeof(ubo));
+    }
+
     void ReinkanApp::RecordAOPass(VkCommandBuffer commandBuffer, uint32_t imageIndex)
     {
         VkRenderPassBeginInfo renderPassBeginInfo{};
@@ -298,12 +469,24 @@ namespace Reinkan::Graphics
 
     void ReinkanApp::DestroyAOResources()
     {
+        for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
+        {
+            appAOBlurUBO[i].Destroy(appDevice);
+        }
+
         // Descriptor Set
         appAODescriptorWrap.Destroy(appDevice);
+        appAOBlurDescriptorWrap.Destroy(appDevice);
 
         // Pipeline
         vkDestroyPipeline(appDevice, appAOPipeline, nullptr);
         vkDestroyPipelineLayout(appDevice, appAOPipelineLayout, nullptr);
+
+        vkDestroyPipeline(appDevice, appAOBlurHorizontalPipeline, nullptr);
+        vkDestroyPipelineLayout(appDevice, appAOBlurHorizontalPipelineLayout, nullptr);
+
+        vkDestroyPipeline(appDevice, appAOBlurVerticalPipeline, nullptr);
+        vkDestroyPipelineLayout(appDevice, appAOBlurVerticalPipelineLayout, nullptr);
 
         // RenderPass
         vkDestroyRenderPass(appDevice, appAORenderPass, nullptr);

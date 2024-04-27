@@ -123,9 +123,13 @@ namespace Reinkan::Graphics
             
 
             //ModelData sponza;
+            modelTr = glm::mat4(1);
+            modelTr = glm::translate(modelTr, glm::vec3(-8.0f, 0.0f, 0.0f));
+            modelTr = glm::scale(modelTr, glm::vec3(0.01f));
+            //modelTr = glm::rotate(modelTr, 0.0f, glm::vec3(0, 1, 0));
             ReadAssimpFile("../assets/models/sponza.obj",
             
-                glm::mat4(0.01),
+                modelTr,
                 modelDatas,
                 vulkanApp->GetAppMaterialPool(),
                 vulkanApp->GetAppTexturePool(),

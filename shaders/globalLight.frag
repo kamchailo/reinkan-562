@@ -77,7 +77,7 @@ void main()
     uv.x = max(0.0, min(1.0, uv.x));
     uv.y = acos(normal.y) / PI;
     vec3 hdr = texture(hdrTextureSamplers[hdrIndex], uv).xyz;
-    vec3 irradiance = texture(hdrTextureSamplers[hdrIndex + 1], uv).xyz * pushConstant.debugFloat;
+    vec3 irradiance = texture(hdrTextureSamplers[hdrIndex + 1], uv).xyz;
     
     Material material;
     material.diffuse = 1.0 - Ks;
@@ -134,7 +134,7 @@ void main()
 
     }
     // Divided by total number of sample to get an average
-    sumBrdf = sumBrdf / float(HAMMERSLEY_NUMBER) * pushConstant.debugFloat2;
+    sumBrdf = sumBrdf / float(HAMMERSLEY_NUMBER);
 
     vec3 brdfColor = (Kd / PI) * (irradiance) + sumBrdf;
     

@@ -118,9 +118,11 @@ namespace Reinkan::Graphics
         ImGui::Checkbox("Show V Light", &appImguiBool7);
         */
         
-        ImGui::SliderFloat("Diffuse Intensity: ", &appDebugFloat, 0.01f, 2.0f);
+        ImGui::SliderFloat("AO Range: ", &appAORange, 0.01f, 2.0f);
 
-        ImGui::SliderFloat("Specular Intensity: ", &appDebugFloat2, 0.01f, 5.0f); 
+        ImGui::SliderFloat("AO Scale: ", &appAOScale, 0.1f, 5.0f);
+
+        ImGui::SliderFloat("AO Curve: ", &appAOCurveK, 0.1f, 5.0f);
 
         ImGui::SliderFloat("Debug Camera Fovy: ", &appDebugFloat3, 10.0f, 90.0f);
 

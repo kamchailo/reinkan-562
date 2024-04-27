@@ -272,12 +272,11 @@ namespace Reinkan::Graphics
             PushConstantAO pushConstant;
             //pushConstant.cameraPosition = glm::vec4(appMainCamera->GetPosition(), 1.0);
             pushConstant.screenExtent = glm::vec2(appSwapchainExtent.width, appSwapchainExtent.height);
-            pushConstant.aoRange = 0.1f;
-            //pushConstant.IBLTextureIndex = appDebugInt;
-            //pushConstant.LODOffset = appDebugFloat3;
+            pushConstant.sampleNumber = 20;
+            pushConstant.aoRange = appAORange;
             pushConstant.debugFlag = appDebugFlag;
-            pushConstant.debugFloat = appDebugFloat;
-            pushConstant.debugFloat2 = appDebugFloat2;
+            pushConstant.aoScale = appAOScale;
+            pushConstant.aoCurveK = appAOCurveK;
             pushConstant.debugFloat3 = appDebugFloat3;
 
 

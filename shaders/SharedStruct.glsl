@@ -127,10 +127,11 @@ struct PushConstantGlobalLight
 struct PushConstantAO
 	{
 		vec2 	screenExtent;
-        uint    aoRange;
+        uint    sampleNumber;
+        float   aoRange;
         uint    debugFlag;
-		float   debugFloat;
-		float   debugFloat2;
+		float   aoScale;
+		float   aoCurveK;
 		float   debugFloat3;
 	};
 

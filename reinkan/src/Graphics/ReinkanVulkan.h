@@ -900,5 +900,9 @@ namespace Reinkan::Graphics
         VkPipeline                      appAOPipeline;
         VkPipelineLayout                appAOPipelineLayout;
 
+        float                           appAORange{ 0.2f };
+        float                           appAOScale{ 2.0f };
+        float                           appAOCurveK{ 2.0f };
+
     };
 }

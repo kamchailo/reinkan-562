@@ -36,6 +36,7 @@ void main()
     vec2 uv = gl_FragCoord.xy/pushConstant.screenExtent;
     vec4 colorPass = texture(globalLightRenderedImage, uv);
     float shadow = colorPass.a;
+    float ambientOcclision = texture(ambientOcclusionMap, uv).r;
 
     if((pushConstant.debugFlag & 0x1) >= 1)
     {
@@ -62,9 +63,15 @@ void main()
     {
         shadow = 1.0;
     }
-    
-    // add local lights
-    vec3 finalColor = (colorPass).rgb + texture(deferredImage, uv).rgb;
+
+    // Based Color from globalLightRenderedImage
+    vec3 finalColor = (colorPass).rgb;
+
+    // add local lights from deferredImage
+    finalColor += texture(deferredImage, uv).rgb;
+
+    // Add Ambient from ambientOcclusionMap
+    finalColor *= ambientOcclision;
 
     outColor = vec4(finalColor, 1.0);
 

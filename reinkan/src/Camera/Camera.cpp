@@ -14,7 +14,7 @@ namespace Reinkan::Camera
 					    pFront(0.1f),
 					    pBack(1000.0f),
 					    rY(0.57),
-						speed(1.6),
+						speed(3.0),
 						rotateSpeed(0.5)
 	{
 		perspectiveMatrix = glm::mat4(1);

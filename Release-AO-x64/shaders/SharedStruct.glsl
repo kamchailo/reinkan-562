@@ -1,0 +1,159 @@
+
+struct PushConstant
+{
+    mat4 modelMatrix;
+    mat4 normalMatrix;
+	int objectId;
+    int materialId;
+    uint debugFlag;
+    float debugFloat;
+    float debugFloat2;
+    float debugFloat3;
+    int debugInt;
+};
+
+struct Material
+{    
+    vec3 diffuse;
+    uint diffuse_padding;
+    vec3 specular;
+    uint specular_padding;
+    uint normalMapId;
+    uint heightMapId;
+    float shininess;
+    uint diffuseMapId;
+    uint pyramidalHeightMapId;
+};
+
+struct UniformBufferObject
+{
+    mat4 model;
+    mat4 view;
+    mat4 viewInverse;
+    mat4 proj;
+    mat4 shadowProjectionViewMatrix;
+    vec3 globalLightPosition;
+    uint globalLightPosition_padding;
+    vec2 screenExtent;
+};
+
+struct ShadowBlurUniformBufferObject 
+{
+    uint blurWidth;
+    uint imageWidth;
+    uint imageHeight;
+    uint _padding;
+};
+
+struct AOBlurUniformBufferObject 
+{
+    uint blurWidth;
+    uint screenWidth;
+    uint screenHeight;
+    uint _padding;
+};
+
+struct LightObject
+{
+    vec3	position;
+    uint    position_padding;
+    vec3	color;
+    uint    color_padding;
+    float	intensity;
+    float   radius;
+};
+
+struct ClusterGrid
+{
+    vec3	minPosition;
+    uint    minPos_padding;
+    vec3	maxPosition;
+    uint    maxPos_padding;
+};
+
+struct ClusterPlane
+{
+    float	zNear;
+    uint    zNear_padding;
+    float	zFar;
+    uint    zFar_padding;
+};
+
+struct LightGrid
+{
+    uint offset;
+    uint size;
+};
+
+struct PushConstantShadow
+{
+    mat4 modelMatrix;
+    vec2 screenExtent;
+};
+
+struct PushConstantVLight
+{
+    vec4 lightPosition;
+    vec4 lightConstant;
+    vec4 cameraPosition;
+    vec2 shadowMapExtent;
+};
+
+struct PushConstantDeferredLight
+{
+    vec4 lightConstant;
+    vec4 cameraPosition;
+    vec2 shadowMapExtent;
+    vec2 screenExtent;
+    float debugFloat;
+    float debugFloat2;
+};
+
+struct PushConstantPost
+{
+    vec2 screenExtent;
+    vec4 globalLightPosition;
+    vec4 cameraPosition;
+    uint debugFlag;
+    float debugFloat;
+    float debugFloat2;
+    float debugFloat3;
+};
+
+struct PushConstantGlobalLight
+{
+    vec4	cameraPosition;
+    vec2    screenExtent;
+	uint	distributionNumber;
+	uint	IBLTextureIndex;
+	uint	LODOffset;
+    uint    debugFlag;
+    float   debugFloat;
+    float   debugFloat2;
+    float   debugFloat3;
+};
+
+struct PushConstantAO
+	{
+		vec2 	screenExtent;
+        uint    sampleNumber;
+        float   aoRange;
+        uint    debugFlag;
+		float   aoScale;
+		float   aoCurveK;
+		float   debugFloat3;
+	};
+
+vec3 colorSample[8] = {vec3(1.0, 0.0, 0.0), 
+                        vec3(1.0, 1.0, 0.0), 
+                        vec3(0.0, 1.0, 0.0), 
+                        vec3(0.0, 1.0, 1.0), 
+                        vec3(0.0, 0.0, 1.0), 
+                        vec3(1.0, 0.0, 1.0), 
+                        vec3(0.0, 0.0, 0.0), 
+                        vec3(1.0, 1.0, 1.0)}; 
+
+vec3 GetDebugIntColor(int value)
+{
+    return colorSample[value % 8];
+}

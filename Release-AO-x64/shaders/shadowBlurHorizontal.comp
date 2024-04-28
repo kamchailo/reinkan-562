@@ -1,0 +1,85 @@
+#version 450
+
+#include "SharedStruct.glsl"
+
+#include "gaussianKernels.glsl"
+
+const int LOCAL_GROUP_SIZE_X = 128;
+layout(local_size_x = LOCAL_GROUP_SIZE_X, local_size_y = 1, local_size_z = 1) in;
+
+layout(binding = 0) uniform ShadowBlurUniformBufferObject_T 
+{
+    ShadowBlurUniformBufferObject ubo;
+};
+
+layout(set = 0, binding = 1, rgba32f) uniform image2D inImage;
+layout(set = 0, binding = 2, rgba32f) uniform image2D outImage;
+
+shared vec4 sharedPixels[LOCAL_GROUP_SIZE_X + 101];
+
+void main()
+{
+    ivec2 gpos = ivec2(gl_GlobalInvocationID.xy);  // Index of central pixel being blur
+    uint lposX = gl_LocalInvocationID.x;  // Local Index
+    int halfWidth = int(ubo.blurWidth / 2);
+    
+    // Clamp horizontal to 0 - ubo.imageWidth - 1
+    // gpos.x = max(0, gpos.x);
+    // gpos.x = min(gpos.x, int(ubo.imageWidth - 1));
+
+
+    // readingIndex -----------v                           v------- GPOS is dispatch pixel
+    //                  ||GPOS - halfWidth| . . . . . . |GPOS| . . . . . . 77||
+    //
+    ivec2 readingPixel = gpos - ivec2(halfWidth, 0);
+    // Clamp to make it contain in the image [0, ubo.imageWidth - 1]
+    readingPixel.x = max(0, readingPixel.x);
+    readingPixel.x = min(readingPixel.x, int(ubo.imageWidth - 1));
+    sharedPixels[lposX] = imageLoad(inImage, readingPixel);
+
+
+    // on pixel Look
+    //                  | -halfWidth ...........||..................GPOS..................||........... +halfWidth |
+
+    //                  |Write readingPixel to shared memory sharedPixels       | Write Extra 100 for blur
+    //                  v                                                       v
+    // inImage        = ||GPOS - halfWidth|.............................77|| + ||78.............|GPOS + halfWidth)||
+    //                  || -50..........................................77|| + ||78............................178||
+    // -- writing          v v v v v v v v v v v v v v v v v v v v v v v v        v v v v v v v v v v v v v v v v 
+    // sharedPixels   = || 0...........................................127|| + ||128...........................228||
+    // Write Extra
+    // only first 100 local invocation
+    if(lposX < ubo.blurWidth)
+    {
+        ivec2 extraReadingPixel = gpos + ivec2(LOCAL_GROUP_SIZE_X - halfWidth, 0); //[78 - 178]
+        // Clamp to make it contain in the image [0, ubo.imageWidth - 1]
+        extraReadingPixel.x = max(0, extraReadingPixel.x );
+        extraReadingPixel.x = min(extraReadingPixel.x, int(ubo.imageWidth - 1));
+        // Write Extra
+        sharedPixels[LOCAL_GROUP_SIZE_X + lposX] = imageLoad(inImage, extraReadingPixel);
+    }
+
+    // Barrier for Shared Variables
+    memoryBarrierShared();
+    // Barrier for local thread
+    barrier();
+
+    // Blur
+    // ||.........inImage...........||
+    // ||-halfWidth..|....+halfWidth||
+    //   \...........|............/
+    //      \........|........../
+    //            \..|../
+    //               V
+    //            outImage [gpos]
+    vec4 sum = vec4(0.0);
+    for(int i = -halfWidth; i <= halfWidth; ++i)
+    {
+        sum += gaussianKernels[i + halfWidth] * sharedPixels[lposX + i + halfWidth];
+    }
+
+    if(gpos.x >= 0 && gpos.x < int(ubo.imageWidth - 1))
+    {
+        imageStore(outImage, gpos, sum);
+    }
+}

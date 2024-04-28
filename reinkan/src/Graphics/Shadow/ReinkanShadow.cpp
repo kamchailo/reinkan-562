@@ -274,6 +274,13 @@ namespace Reinkan::Graphics
                                       2,                                         // descriptorCount; // Has to > 0
                                       VK_SHADER_STAGE_COMPUTE_BIT });
 
+        // appBlurShadowMapImageWraps
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                                               // binding;
+                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,                    // descriptorType;
+                                      2,                                         // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_COMPUTE_BIT });
+
         /*
         * 
         * Binding Resources
@@ -407,17 +414,17 @@ namespace Reinkan::Graphics
 
     }
 
-    void ReinkanApp::CreateShadowCommandBuffer()
+    void ReinkanApp::CreatePreComputeCommandBuffer()
     {
-        appShadowCommandBuffer.resize(MAX_FRAMES_IN_FLIGHT);
+        appPreComputeCommandBuffer.resize(MAX_FRAMES_IN_FLIGHT);
 
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool = appCommandPool;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = (uint32_t)appShadowCommandBuffer.size();
+        allocInfo.commandBufferCount = (uint32_t)appPreComputeCommandBuffer.size();
 
-        if (vkAllocateCommandBuffers(appDevice, &allocInfo, appShadowCommandBuffer.data()) != VK_SUCCESS)
+        if (vkAllocateCommandBuffers(appDevice, &allocInfo, appPreComputeCommandBuffer.data()) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to allocate compute command buffers!");
         }

@@ -57,22 +57,26 @@ namespace Reinkan::Graphics
         vkWaitForFences(appDevice, 1, &appRenderShadowFences[appCurrentFrame], VK_TRUE, UINT64_MAX);
 
         UpdateShadowUBO(appCurrentFrame); // Update shadow first for appShadowProjectionViewMatrix
-        
+
         vkResetFences(appDevice, 1, &appRenderShadowFences[appCurrentFrame]);
 
-        vkResetCommandBuffer(appShadowCommandBuffer[appCurrentFrame], 0);
+        vkResetCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame], 0);
         VkCommandBufferBeginInfo beginShadowInfo{};
         beginShadowInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        if (vkBeginCommandBuffer(appShadowCommandBuffer[appCurrentFrame], &beginShadowInfo) != VK_SUCCESS)
+        if (vkBeginCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame], &beginShadowInfo) != VK_SUCCESS)
         { throw std::runtime_error("failed to begin recording command buffer!"); }
         // --------------------
         // Pre Compute . . .
         // --------------------
         {
-            RecordShadowPass(appShadowCommandBuffer[appCurrentFrame], appCurrentFrame);
+            RecordShadowPass(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
             
+            RecordScanline(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
+
+            RecordAOPass(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
+
         }
-        if (vkEndCommandBuffer(appShadowCommandBuffer[appCurrentFrame]) != VK_SUCCESS)
+        if (vkEndCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame]) != VK_SUCCESS)
         { throw std::runtime_error("failed to record command buffer!"); }
 
         //VkSemaphore computeWaitSemaphores[] = { };
@@ -82,7 +86,7 @@ namespace Reinkan::Graphics
         VkSubmitInfo submitPreComputeInfo{};
         submitPreComputeInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitPreComputeInfo.commandBufferCount = 1;
-        submitPreComputeInfo.pCommandBuffers = &appShadowCommandBuffer[appCurrentFrame];
+        submitPreComputeInfo.pCommandBuffers = &appPreComputeCommandBuffer[appCurrentFrame];
         submitPreComputeInfo.waitSemaphoreCount = 0;
         submitPreComputeInfo.pWaitSemaphores = {};
         submitPreComputeInfo.signalSemaphoreCount = 1;
@@ -97,6 +101,8 @@ namespace Reinkan::Graphics
 
         // Upload CPU resources
         UpdateShadowBlurUBO(appCurrentFrame);
+        UpdateAOBlurUBO(appCurrentFrame);
+
         vkResetFences(appDevice, 1, &appComputeShadowBlurFences[appCurrentFrame]);
 
         vkResetCommandBuffer(appComputeCommandBuffers[appCurrentFrame], 0);
@@ -131,8 +137,28 @@ namespace Reinkan::Graphics
                                        appShadowBlurDescriptorWrap,
                                        appShadowMapWidth, appShadowMapHeight / 128, 1,
                                        false);
+
+            // Horizontal AO Blur Compute Dispatch
+            RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
+                                       appAOBlurHorizontalPipeline,
+                                       appAOBlurHorizontalPipelineLayout,
+                                       appAOBlurDescriptorWrap,
+                                       appSwapchainExtent.width / 128 + 1, appSwapchainExtent.height, 1,
+                                       true);
+
+            CmdCopyImage(appComputeCommandBuffers[appCurrentFrame],
+                         appBlurAOMapImageWraps[appCurrentFrame],
+                         appAORenderTargetImageWraps[appCurrentFrame],
+                         appSwapchainExtent.width,
+                         appSwapchainExtent.height);
             
-            // IBL Compute Dispatch
+            // Vertical AO Blur Compute Dispatch
+            RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
+                                       appAOBlurVerticalPipeline,
+                                       appAOBlurVerticalPipelineLayout,
+                                       appAOBlurDescriptorWrap,
+                                       appSwapchainExtent.width, appSwapchainExtent.height / 128 + 1, 1,
+                                       false);
         }
         
         if (vkEndCommandBuffer(appComputeCommandBuffers[appCurrentFrame]) != VK_SUCCESS)
@@ -182,7 +208,6 @@ namespace Reinkan::Graphics
             // RecordShadowPass move to pre compute
             //RecordShadowPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
-            RecordScanline(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
             RecordGlobalLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 

@@ -219,6 +219,9 @@
     <ClCompile Include="src\Graphics\GlobalLight\ReinkanGlobalLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphics\AmbientOcclusion\ReinkanAmbientOcclusion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Graphics\ReinkanVulkan.h">

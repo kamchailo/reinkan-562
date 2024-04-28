@@ -2,7 +2,7 @@
 # www.blender.org
 
 newmtl porcelin
-Ns 0.030000
+Ns 0.070000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800000 0.800000 0.800000
 Ks 0.500000 0.500000 0.500000
@@ -10,5 +10,5 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd ceiling-flower_feb-26-2022_basecolor.png
-map_Kn ceiling-flower_feb-26-2022_normal.png
+map_Kd popcorn-wall-basecolor.png
+map_Kn popcorn-wall-normal.png

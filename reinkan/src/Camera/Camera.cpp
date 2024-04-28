@@ -5,16 +5,16 @@
 
 namespace Reinkan::Camera
 {
-	Camera::Camera() : position(glm::vec3(-3.1,0.5,-1.8)),
+	Camera::Camera() : position(glm::vec3(0.5f, 1.5f, -1.8f)),
 					    //spin(-1.5707963268f), // -PI / 2.0
-						spin(-2.8f),
-					    tilt(0.25f), 
+						spin(-2.5f),
+					    tilt(0.0f), 
 						//tilt(1.57f),
 						fieldOfView(45.0),
 					    pFront(0.1f),
 					    pBack(1000.0f),
 					    rY(0.57),
-						speed(1.6),
+						speed(3.0),
 						rotateSpeed(0.5)
 	{
 		perspectiveMatrix = glm::mat4(1);

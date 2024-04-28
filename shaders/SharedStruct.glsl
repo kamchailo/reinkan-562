@@ -37,10 +37,19 @@ struct UniformBufferObject
     vec2 screenExtent;
 };
 
-struct ShadowBlurUniformBufferObject {
+struct ShadowBlurUniformBufferObject 
+{
     uint blurWidth;
     uint imageWidth;
     uint imageHeight;
+    uint _padding;
+};
+
+struct AOBlurUniformBufferObject 
+{
+    uint blurWidth;
+    uint screenWidth;
+    uint screenHeight;
     uint _padding;
 };
 
@@ -123,6 +132,17 @@ struct PushConstantGlobalLight
     float   debugFloat2;
     float   debugFloat3;
 };
+
+struct PushConstantAO
+	{
+		vec2 	screenExtent;
+        uint    sampleNumber;
+        float   aoRange;
+        uint    debugFlag;
+		float   aoScale;
+		float   aoCurveK;
+		float   debugFloat3;
+	};
 
 vec3 colorSample[8] = {vec3(1.0, 0.0, 0.0), 
                         vec3(1.0, 1.0, 0.0), 

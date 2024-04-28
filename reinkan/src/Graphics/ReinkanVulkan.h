@@ -539,7 +539,7 @@ namespace Reinkan::Graphics
 
         uint32_t    appDebugFlag{ 0x0 };
         float       appDebugFloat{ 1.0f };
-        float       appDebugFloat2{ 1.0f };
+        float       appDebugFloat2{ 0.5f };
         float       appDebugFloat3{ 30.0f };
         int         appDebugInt{ 0 };
 
@@ -809,7 +809,7 @@ namespace Reinkan::Graphics
 
         void CreateShadowBlurResources();
 
-        void CreateShadowCommandBuffer();
+        void CreatePreComputeCommandBuffer();
 
         void CreateShadowSyncObjects();
 
@@ -854,7 +854,7 @@ namespace Reinkan::Graphics
         std::vector<BufferWrap>         appShadowBlurUBO;
         std::vector<void*>              appShadowBlurUBOMapped; // Address to Buffer | HOST_VISIBLE
 
-        std::vector<VkCommandBuffer>    appShadowCommandBuffer; // Command Buffer on Graphics Queue
+        std::vector<VkCommandBuffer>    appPreComputeCommandBuffer; // Command Buffer on Graphics Queue
 
         // Semaphores for Shadow Pass
         std::vector<VkSemaphore>        appPreComputeFinishedSemaphores;
@@ -864,6 +864,57 @@ namespace Reinkan::Graphics
         std::vector<VkFence>            appComputeShadowBlurFences;
 
         std::vector<BufferWrap>         appShadowBlurBlocks;
+
+    // ReinkanAmbientOcclusion.cpp
+        void CreateAORenderPass();
+
+        void CreateAOFrameBuffers();
+
+        void CreateAODescriptorSetWrap();
+
+        void CreateAOPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateAOBlurDescriptorSetWrap();
+
+        void CreateAOBlurHorizontalPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateAOBlurVerticalPipeline(DescriptorWrap descriptorWrap);
+
+        void CreateAOBlurResources();
+
+        void CreateAOBlurImageWraps();
+
+        void UpdateAOBlurUBO(uint32_t currentImage);
+
+        void RecordAOPass(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+        void DestroyAOResources();
+
+        VkRenderPass                    appAORenderPass;
+
+        std::vector<VkFramebuffer>      appAOFrameBuffers;
+
+        std::vector<ImageWrap>          appAORenderTargetImageWraps;
+
+        std::vector<ImageWrap>          appBlurAOMapImageWraps;
+
+        DescriptorWrap                  appAODescriptorWrap;
+        VkPipeline                      appAOPipeline;
+        VkPipelineLayout                appAOPipelineLayout;
+
+        DescriptorWrap                  appAOBlurDescriptorWrap;
+        VkPipeline                      appAOBlurHorizontalPipeline;
+        VkPipelineLayout                appAOBlurHorizontalPipelineLayout;
+
+        VkPipeline                      appAOBlurVerticalPipeline;
+        VkPipelineLayout                appAOBlurVerticalPipelineLayout;
+
+        std::vector<BufferWrap>         appAOBlurUBO;
+        std::vector<void*>              appAOBlurUBOMapped; // Address to Buffer | HOST_VISIBLE
+
+        float                           appAORange{ 0.25f };
+        float                           appAOScale{ 5.0f };
+        float                           appAOCurveK{ 2.0f };
 
     };
 }

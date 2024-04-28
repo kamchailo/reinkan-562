@@ -39,7 +39,8 @@ namespace Reinkan
 		alignas(4) int debugInt;
 	};
 
-	struct ShadowUniformBufferObject {
+	struct ShadowUniformBufferObject 
+	{
 		alignas(16) glm::mat4 model;
 		alignas(16) glm::mat4 view;
 		alignas(16) glm::mat4 viewInverse;
@@ -47,10 +48,19 @@ namespace Reinkan
 		alignas(8) glm::vec2 screenExtent;
 	};
 
-	struct ShadowBlurUniformBufferObject {
+	struct ShadowBlurUniformBufferObject 
+	{
 		alignas(4) uint32_t blurWidth;
 		alignas(4) uint32_t shadowWidth;
 		alignas(4) uint32_t shadowHeight;
+		alignas(4) uint32_t _padding;
+	};
+
+	struct AOBlurUniformBufferObject 
+	{
+		alignas(4) uint32_t blurWidth;
+		alignas(4) uint32_t screenWidth;
+		alignas(4) uint32_t screenHeight;
 		alignas(4) uint32_t _padding;
 	};
 
@@ -182,6 +192,16 @@ namespace Reinkan
 		alignas(4) float   		debugFloat;
 		alignas(4) float   		debugFloat2;
 		alignas(4) float   		debugFloat3;
+	};
 
+	struct PushConstantAO
+	{
+		alignas(8) glm::vec2 	screenExtent;
+		alignas(4) uint32_t		sampleNumber;
+		alignas(4) float		aoRange;
+		alignas(4) uint32_t    	debugFlag;
+		alignas(4) float   		aoScale;
+		alignas(4) float   		aoCurveK;
+		alignas(4) float   		debugFloat3;
 	};
 }

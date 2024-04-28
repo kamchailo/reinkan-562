@@ -33,6 +33,9 @@ namespace Reinkan::Graphics
 		// DeferredLighting
 		DestroyDeferredLightResources();
 
+		// Ambient Occlusion
+		DestroyAOResources();
+
 		// Post Processing
 		CleanupPostProcessing();
 

@@ -539,7 +539,7 @@ namespace Reinkan::Graphics
 
         uint32_t    appDebugFlag{ 0x0 };
         float       appDebugFloat{ 1.0f };
-        float       appDebugFloat2{ 0.0f };
+        float       appDebugFloat2{ 0.5f };
         float       appDebugFloat3{ 30.0f };
         int         appDebugInt{ 0 };
 
@@ -912,8 +912,8 @@ namespace Reinkan::Graphics
         std::vector<BufferWrap>         appAOBlurUBO;
         std::vector<void*>              appAOBlurUBOMapped; // Address to Buffer | HOST_VISIBLE
 
-        float                           appAORange{ 0.2f };
-        float                           appAOScale{ 2.0f };
+        float                           appAORange{ 0.25f };
+        float                           appAOScale{ 5.0f };
         float                           appAOCurveK{ 2.0f };
 
     };

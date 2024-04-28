@@ -73,7 +73,7 @@ void main()
     finalColor += texture(deferredImage, uv).rgb;
 
     // Add Ambient from ambientOcclusionMap
-    finalColor *= ambientOcclusion + pushConstant.debugFloat2;
+    finalColor *= clamp(0.0, 1.0, ambientOcclusion + pushConstant.debugFloat2);
 
     outColor = vec4(finalColor, 1.0);
 

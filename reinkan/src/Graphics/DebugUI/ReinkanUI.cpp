@@ -120,11 +120,11 @@ namespace Reinkan::Graphics
         
         ImGui::SliderFloat("AO Range: ", &appAORange, 0.01f, 2.0f);
 
-        ImGui::SliderFloat("AO Scale: ", &appAOScale, 0.1f, 5.0f);
+        ImGui::SliderFloat("AO Scale: ", &appAOScale, 0.1f, 10.0f);
 
         ImGui::SliderFloat("AO Curve: ", &appAOCurveK, 0.1f, 5.0f);
 
-        ImGui::SliderFloat("AO Brightness: ", &appDebugFloat2, 0.0f, 1.0f);
+        ImGui::SliderFloat("AO Brightness: ", &appDebugFloat2, 0.0f, 2.0f);
 
         ImGui::SliderFloat("Debug Camera Fovy: ", &appDebugFloat3, 10.0f, 90.0f);
 

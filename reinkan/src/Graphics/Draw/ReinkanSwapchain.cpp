@@ -243,6 +243,7 @@ namespace Reinkan::Graphics
             appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appAOBlurUBO);
             appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appAORenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
             appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appBlurAOMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+            appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
         }
 
         // Rebind Descriptor for Post Processing

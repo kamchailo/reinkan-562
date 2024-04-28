@@ -35,9 +35,9 @@ void main()
     float c = 0.1 * R;
     float delta = 0.001;
 
-    int xHat = int(gl_FragCoord.x / PI) - 1;
-    int yHat = int(gl_FragCoord.y);
-    float phi = (30 * xHat ^ yHat) + 10 * xHat * yHat;
+    int xPrime = int(gl_FragCoord.x / PI) - 1;
+    int yPrime = int(gl_FragCoord.y);
+    float phi = (30 * xPrime ^ yPrime) + 10 * xPrime * yPrime;
 
     float falloff = (2 * PI * c) / n;
     float integralValue = 0.0;
@@ -88,7 +88,7 @@ void main()
     float scale = pushConstant.aoScale;
     float curveK = pushConstant.aoCurveK;
 
-    float AO = max(0.0, (1 - scale * S) );
+    float AO = max(0.0, (1 - scale * S));
 
     outColor = vec4(vec3(AO), 1.0);
     return;

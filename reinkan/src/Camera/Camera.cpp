@@ -5,10 +5,10 @@
 
 namespace Reinkan::Camera
 {
-	Camera::Camera() : position(glm::vec3(-3.1f, 1.0f, -1.8f)),
+	Camera::Camera() : position(glm::vec3(0.5f, 1.5f, -1.8f)),
 					    //spin(-1.5707963268f), // -PI / 2.0
 						spin(-2.5f),
-					    tilt(0.20f), 
+					    tilt(0.0f), 
 						//tilt(1.57f),
 						fieldOfView(45.0),
 					    pFront(0.1f),

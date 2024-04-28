@@ -58,8 +58,6 @@ namespace Reinkan::Graphics
 
         UpdateShadowUBO(appCurrentFrame); // Update shadow first for appShadowProjectionViewMatrix
 
-        UpdateAOBlurUBO(appCurrentFrame);
-        
         vkResetFences(appDevice, 1, &appRenderShadowFences[appCurrentFrame]);
 
         vkResetCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame], 0);
@@ -103,6 +101,8 @@ namespace Reinkan::Graphics
 
         // Upload CPU resources
         UpdateShadowBlurUBO(appCurrentFrame);
+        UpdateAOBlurUBO(appCurrentFrame);
+
         vkResetFences(appDevice, 1, &appComputeShadowBlurFences[appCurrentFrame]);
 
         vkResetCommandBuffer(appComputeCommandBuffers[appCurrentFrame], 0);
@@ -137,32 +137,28 @@ namespace Reinkan::Graphics
                                        appShadowBlurDescriptorWrap,
                                        appShadowMapWidth, appShadowMapHeight / 128, 1,
                                        false);
-            
+
             // Horizontal AO Blur Compute Dispatch
             RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
                                        appAOBlurHorizontalPipeline,
                                        appAOBlurHorizontalPipelineLayout,
                                        appAOBlurDescriptorWrap,
-                                       appSwapchainExtent.width / 128, appSwapchainExtent.height, 1,
+                                       appSwapchainExtent.width / 128 + 1, appSwapchainExtent.height, 1,
                                        true);
-            
+
             CmdCopyImage(appComputeCommandBuffers[appCurrentFrame],
                          appBlurAOMapImageWraps[appCurrentFrame],
                          appAORenderTargetImageWraps[appCurrentFrame],
                          appSwapchainExtent.width,
                          appSwapchainExtent.height);
             
-
             // Vertical AO Blur Compute Dispatch
             RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
                                        appAOBlurVerticalPipeline,
                                        appAOBlurVerticalPipelineLayout,
                                        appAOBlurDescriptorWrap,
-                                       appSwapchainExtent.width, appSwapchainExtent.height / 128, 1,
+                                       appSwapchainExtent.width, appSwapchainExtent.height / 128 + 1, 1,
                                        false);
-            
-            
-            // IBL Compute Dispatch
         }
         
         if (vkEndCommandBuffer(appComputeCommandBuffers[appCurrentFrame]) != VK_SUCCESS)

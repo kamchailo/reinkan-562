@@ -274,6 +274,13 @@ namespace Reinkan::Graphics
                                       2,                                         // descriptorCount; // Has to > 0
                                       VK_SHADER_STAGE_COMPUTE_BIT });
 
+        // appBlurShadowMapImageWraps
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                                               // binding;
+                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,                    // descriptorType;
+                                      2,                                         // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_COMPUTE_BIT });
+
         /*
         * 
         * Binding Resources

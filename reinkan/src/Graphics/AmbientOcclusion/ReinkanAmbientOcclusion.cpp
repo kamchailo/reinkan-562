@@ -252,6 +252,13 @@ namespace Reinkan::Graphics
                                       2,                                    // descriptorCount; // Has to > 0
                                       VK_SHADER_STAGE_COMPUTE_BIT });       // stageFlags;
 
+        // appScanlineNormalImageWraps
+        bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                       // binding;
+                                      VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,     // descriptorType;
+                                      2,                                    // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_COMPUTE_BIT });       // stageFlags;
+
         /*
         *
         * Binding Resources
@@ -265,8 +272,9 @@ namespace Reinkan::Graphics
         bindingIndex = 0;
         appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appAOBlurUBO);
         appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appAORenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
-        appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appBlurAOMapImageWraps, MAX_FRAMES_IN_FLIGHT);
-    }
+        appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appBlurAOMapImageWraps, MAX_FRAMES_IN_FLIGHT); 
+        appAOBlurDescriptorWrap.Write(appDevice, bindingIndex++, appScanlineNormalImageWraps, MAX_FRAMES_IN_FLIGHT);
+    }   
 
     void ReinkanApp::CreateAOBlurHorizontalPipeline(DescriptorWrap descriptorWrap)
     {

@@ -103,7 +103,7 @@ void main()
 
     outPosition = vec4(worldPos, length(viewDir));
 
-    outNormal = vec4(N, 1.0);
+    outNormal = vec4(N, length(viewDir));
 
     outSpecular = vec4(material.specular, material.shininess);
 

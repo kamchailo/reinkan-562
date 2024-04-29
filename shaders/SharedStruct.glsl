@@ -93,10 +93,13 @@ struct PushConstantShadow
 
 struct PushConstantVLight
 {
-    vec4 lightPosition;
-    vec4 lightConstant;
-    vec4 cameraPosition;
-    vec2 shadowMapExtent;
+    vec4    lightPosition;
+    vec4    lightConstant;
+    vec4    cameraPosition;
+    vec2    shadowMapExtent;
+    float   lightDistanceScale;
+    float   lightRadius;
+    float   debugFloat;
 };
 
 struct PushConstantDeferredLight
@@ -114,6 +117,10 @@ struct PushConstantPost
     vec2 screenExtent;
     vec4 globalLightPosition;
     vec4 cameraPosition;
+    float maxFogThickness;
+    float fogFalloff;
+    float fogBeta;
+    float lightIntensity;
     uint debugFlag;
     float debugFloat;
     float debugFloat2;

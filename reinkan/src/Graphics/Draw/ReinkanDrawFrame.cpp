@@ -71,9 +71,7 @@ namespace Reinkan::Graphics
         {
             RecordShadowPass(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
             
-            RecordScanline(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
-
-            RecordAOPass(appPreComputeCommandBuffer[appCurrentFrame], appCurrentFrame);
+            
 
         }
         if (vkEndCommandBuffer(appPreComputeCommandBuffer[appCurrentFrame]) != VK_SUCCESS)
@@ -116,6 +114,7 @@ namespace Reinkan::Graphics
         // Compute . . .
         // --------------------
         {
+            /*
             // Horizontal Shadow Blur Compute Dispatch
             RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
                                        appShadowBlurHorizontalPipeline,
@@ -137,7 +136,8 @@ namespace Reinkan::Graphics
                                        appShadowBlurDescriptorWrap,
                                        appShadowMapWidth, appShadowMapHeight / 128, 1,
                                        false);
-
+            
+            * ---- Turn off AO blur till find more efficient way ----
             // Horizontal AO Blur Compute Dispatch
             RecordComputeCommandBuffer(appComputeCommandBuffers[appCurrentFrame],
                                        appAOBlurHorizontalPipeline,
@@ -159,6 +159,7 @@ namespace Reinkan::Graphics
                                        appAOBlurDescriptorWrap,
                                        appSwapchainExtent.width, appSwapchainExtent.height / 128 + 1, 1,
                                        false);
+            */
         }
         
         if (vkEndCommandBuffer(appComputeCommandBuffers[appCurrentFrame]) != VK_SUCCESS)
@@ -205,9 +206,10 @@ namespace Reinkan::Graphics
         if (vkBeginCommandBuffer(appCommandBuffers[appCurrentFrame], &beginInfo) != VK_SUCCESS)
         { throw std::runtime_error("failed to begin recording command buffer!"); }
         {
-            // RecordShadowPass move to pre compute
-            //RecordShadowPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
+            RecordScanline(appCommandBuffers[appCurrentFrame], appCurrentFrame);
+
+            RecordAOPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 
             RecordGlobalLightPass(appCommandBuffers[appCurrentFrame], appCurrentFrame);
 

@@ -106,7 +106,7 @@ namespace Reinkan::Graphics
 
         ImGui::Checkbox("Show AO Map", &appImguiBool2);
 
-        ImGui::Checkbox("Show AO Blur Map", &appImguiBool3);
+        ImGui::Checkbox("VLight Map", &appImguiBool3);
         
         ImGui::Checkbox("Normal Map", &appImguiBool4);
 
@@ -115,20 +115,35 @@ namespace Reinkan::Graphics
 
         ImGui::Checkbox("Hide Shadow", &appImguiBool6);
 
-        ImGui::Checkbox("Show V Light", &appImguiBool7);
         */
         
-        ImGui::SliderFloat("AO Range: ", &appAORange, 0.01f, 2.0f);
+        //ImGui::SliderFloat("AO Range: ", &appAORange, 0.01f, 2.0f);
+        //ImGui::SliderFloat("AO Scale: ", &appAOScale, 0.1f, 10.0f);
+        ImGui::Text("Show V Light:");
+        ImGui::Checkbox("Show V Light", &appImguiBool7);
 
-        ImGui::SliderFloat("AO Scale: ", &appAOScale, 0.1f, 10.0f);
+        ImGui::Text("Accumulate At Light:");
+        ImGui::SliderFloat("Accumulate At Light: ", &appDebugFloat, 0.0f, 1.0f);
 
-        ImGui::SliderFloat("AO Curve: ", &appAOCurveK, 0.1f, 5.0f);
+        ImGui::Text("VLight Distance Scale");
+        ImGui::SliderFloat("VLight Distance Scale: ", &appVLightDistanceScale, 0.0f, 2.0f);
+        
+        ImGui::Text("VLight Radius:");
+        ImGui::SliderFloat("VLight Radius: ", &appVLightRadius, 0.0f, 40.0f);
 
-        ImGui::SliderFloat("AO Brightness: ", &appDebugFloat2, 0.0f, 2.0f);
+        ImGui::Text("VLight Constant Scale:");
+        ImGui::SliderFloat("VLight Constant Scale: ", &appDebugFloat2, 0.0f, 2.0f);
 
-        ImGui::SliderFloat("Debug Camera Fovy: ", &appDebugFloat3, 10.0f, 90.0f);
+        ImGui::Text("Max Fog Thickness:");
+        ImGui::SliderFloat("Fog Thickness: ", &appMaxFogThickness, 0.0f, 1.0f);
 
-        //ImGui::SliderInt("Debug Int: ", &appDebugInt, 0, 11);
+        ImGui::Text("Fog Falloff:");
+        ImGui::SliderFloat("Fog Falloff: ", &appFogFalloff, 1.0f, 20.0f);
+            
+        ImGui::Text("Camera Fovy:");
+        ImGui::SliderFloat("Debug Camera Fovy:", &appDebugFloat3, 10.0f, 90.0f);
+
+        //ImGui::SliderInt("Debug I t: ", &appDebugInt, 0, 11);
 
         ImGui::End();
             

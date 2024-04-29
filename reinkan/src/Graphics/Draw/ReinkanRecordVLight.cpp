@@ -52,6 +52,9 @@ namespace Reinkan::Graphics
             pushConstant.lightConstant = glm::vec4(1, 0.9, 0.5, 1);
             pushConstant.cameraPosition = glm::vec4(appMainCamera->GetPosition(), 1.0);
             pushConstant.shadowMapExtent = glm::vec2(appShadowMapWidth, appShadowMapHeight);
+            pushConstant.lightDistanceScale = appVLightDistanceScale;
+            pushConstant.lightRadius = appVLightRadius;
+            pushConstant.debugFloat = appDebugFloat;
 
             vkCmdPushConstants(commandBuffer,
                 appVLightPipelineLayout,

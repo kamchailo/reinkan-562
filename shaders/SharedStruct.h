@@ -78,6 +78,9 @@ namespace Reinkan
 		alignas(16) glm::vec4 lightConstant;
 		alignas(16) glm::vec4 cameraPosition;
 		alignas(8) glm::vec2 shadowMapExtent;
+		alignas(4) float lightDistanceScale;
+		alignas(4) float lightRadius;
+		alignas(4) float debugFloat;
 	};
 
 	struct PushConstantDeferredLight
@@ -95,6 +98,10 @@ namespace Reinkan
 		alignas(8) glm::vec2 screenExtent;
 		alignas(16) glm::vec4 globalLightPosition;
 		alignas(16) glm::vec4 cameraPosition;
+		alignas(4) float maxFogThickness;
+		alignas(4) float fogFalloff;
+		alignas(4) float fogBeta;
+		alignas(4) float lightIntensity;
 		alignas(4) uint32_t debugFlag;
 		alignas(4) float debugFloat;
 		alignas(4) float debugFloat2;

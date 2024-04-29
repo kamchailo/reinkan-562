@@ -74,6 +74,7 @@ namespace Reinkan::Graphics
 
         return imageWrap;
 	}
+
     ImageWrap ReinkanApp::CreateHDRTextureImageWrap(std::string path)
     {
         ImageWrap imageWrap;

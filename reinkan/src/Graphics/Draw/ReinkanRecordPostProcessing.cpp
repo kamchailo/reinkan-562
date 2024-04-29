@@ -52,6 +52,10 @@ namespace Reinkan::Graphics
             pushConstant.screenExtent = glm::vec2(appSwapchainExtent.width, appSwapchainExtent.height);
             pushConstant.globalLightPosition = glm::vec4{ appGlobalLightPosition, 1.0f };
             pushConstant.cameraPosition = glm::vec4{ appMainCamera->GetPosition(), 1.0f };
+            pushConstant.maxFogThickness = appMaxFogThickness;
+            pushConstant.fogFalloff = appFogFalloff;
+            pushConstant.fogBeta = 0.2f;        
+            pushConstant.lightIntensity = 0.1f;
 
             pushConstant.debugFlag = appDebugFlag;
             pushConstant.debugFloat = appDebugFloat;

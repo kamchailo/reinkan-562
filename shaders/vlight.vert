@@ -17,8 +17,10 @@ layout(binding = 1) uniform sampler2D shadowmap;
 layout(location = 0) in vec3    inPosition;
 layout(location = 1) in vec3    inVertexNormal;
 
+
 layout(location = 0) out vec3 worldPos;
 layout(location = 1) out vec3 vertexNormal;
+layout(location = 2) out float lightOrigin;
 
 void main()
 {
@@ -37,11 +39,13 @@ void main()
     if(gl_VertexIndex == pushConstant.shadowMapExtent.x * pushConstant.shadowMapExtent.y)
     {
         positionFromShadowMap = pushConstant.lightPosition; 
+        lightOrigin = 1.0;
     }
     else
     {
         positionFromShadowMap =  texture(shadowmap, shadowIndex);
         positionFromShadowMap.w = 1.0;
+        lightOrigin = 0.0;
     }
 
     vec4 basePosition = projectViewTransform * positionFromShadowMap;

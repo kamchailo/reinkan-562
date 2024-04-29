@@ -145,6 +145,8 @@ namespace Reinkan::Graphics
 		CreateAOBlurVerticalPipeline(appAOBlurDescriptorWrap);
 
 		// Post Processing
+		CreatedSpecialFunctionImageWraps();
+
 		CreatePostDescriptorSetWrap();
 
 		CreatePostPipeline(appPostDescriptorWrap);

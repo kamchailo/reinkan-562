@@ -164,6 +164,16 @@ namespace Reinkan::Graphics
                                       MAX_FRAMES_IN_FLIGHT,                                         // descriptorCount; // Has to > 0
                                       VK_SHADER_STAGE_FRAGMENT_BIT });                              // stageFlags;
 
+        // layout(binding = 11) uniform sampler2D[] specialFunctionTextureSamplers
+        if (appSpecialFunctionImageWraps.size() > 0)
+        {
+            bindingTable.emplace_back(VkDescriptorSetLayoutBinding{
+                                      bindingIndex++,                                               // binding;
+                                      VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,                    // descriptorType;
+                                      static_cast<uint32_t>(appSpecialFunctionImageWraps.size()),           // descriptorCount; // Has to > 0
+                                      VK_SHADER_STAGE_FRAGMENT_BIT });                              // stageFlags;
+        }
+
         appPostDescriptorWrap.SetBindings(appDevice,
                                             bindingTable,
                                             MAX_FRAMES_IN_FLIGHT);
@@ -182,6 +192,8 @@ namespace Reinkan::Graphics
         // AO
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appAORenderTargetImageWraps, MAX_FRAMES_IN_FLIGHT);
         appPostDescriptorWrap.Write(appDevice, bindingIndex++, appBlurAOMapImageWraps, MAX_FRAMES_IN_FLIGHT);
+        // Special Function for Light Scattering
+        appPostDescriptorWrap.Write(appDevice, bindingIndex++, appSpecialFunctionImageWraps, MAX_FRAMES_IN_FLIGHT);
     }
 
     void ReinkanApp::CreatePostPipeline(DescriptorWrap& descriptorWrap)
@@ -316,5 +328,24 @@ namespace Reinkan::Graphics
 
         vkDestroyShaderModule(appDevice, fragShaderModule, nullptr);
         vkDestroyShaderModule(appDevice, vertShaderModule, nullptr);
+    }
+
+    void ReinkanApp::AddSpecialFunctionImagePaths(std::string const& path)
+    {
+        appSpecialFunctionImagePaths.push_back(path);
+    }
+    
+    void ReinkanApp::CreatedSpecialFunctionImageWraps()
+    {
+        // Need to change to use same memory with mem offset
+        for (auto texturePath : appSpecialFunctionImagePaths)
+        {
+            auto textureImageWrap = CreateTextureImageWrap(texturePath);
+            TransitionImageLayout(textureImageWrap.image,
+                                  VK_FORMAT_R8G8B8A8_SRGB,
+                                  VK_IMAGE_LAYOUT_UNDEFINED,
+                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            appSpecialFunctionImageWraps.push_back(textureImageWrap);
+        }
     }
 }

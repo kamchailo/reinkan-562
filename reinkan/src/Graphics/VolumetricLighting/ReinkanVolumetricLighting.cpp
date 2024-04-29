@@ -186,6 +186,7 @@ namespace Reinkan::Graphics
         VkPipelineColorBlendAttachmentState colorBlendAttachment{};
         colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
         colorBlendAttachment.blendEnable = VK_TRUE;
+        //colorBlendAttachment.blendEnable = VK_FALSE;
         colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
         colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
         colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
@@ -329,5 +330,27 @@ namespace Reinkan::Graphics
 
         appVLightIndexBufferWrap = CreateStagedBufferWrap(appVLightIndices, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 	}
+
+    void ReinkanApp::CreateVLightSpecialFunctionTable(size_t width, size_t height)
+    {
+        /*
+        std::vector<std::vector<float>> specialFunctionTable;
+        constexpr double halfPi = 3.1415926535 / 2.0;
+        constexpr double e = 2.718281828459045;
+        for (int i = 0; i < width; ++i)
+        {
+            // u = [0, 10]
+            double iStep = 10.0 / static_cast<double>(width - 1);
+            double u = i * iStep;
+            for (int j = 0; j < height; ++j)
+            {
+                // v = [0, PI/2]
+                double jStep = halfPi / static_cast<double>(width - 1);
+                double v = v * jStep;
+                specialFunctionTable[i][j] = pow(e, -u * tan(v));
+            }
+        }
+        */
+    }
 }
 

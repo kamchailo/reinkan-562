@@ -110,6 +110,9 @@ namespace Reinkan::Graphics
     //ReinkanGlobalLight.cpp
         void AddHDRImagePath(std::string const& path);
 
+    //ReinkanPostProcessing.cpp
+        void AddSpecialFunctionImagePaths(std::string const& path);
+
     // ------------------------------------------------------------------------------------------------------------------------------//
     // ------------------------------------------------------------------------------------------------------------------------------//
     // ------------------------------------------------------------------------------------------------------------------------------//
@@ -450,6 +453,8 @@ namespace Reinkan::Graphics
 
         void CleanupPostProcessing();
 
+        void CreatedSpecialFunctionImageWraps();
+
         VkRenderPass                    appPostRenderPass;
 
         VkPipeline                      appPostPipeline;
@@ -462,6 +467,9 @@ namespace Reinkan::Graphics
         std::vector<ImageWrap>          appScanlineSpecularImageWraps;
 
         DescriptorWrap                  appPostDescriptorWrap;
+
+        std::vector<std::string>        appSpecialFunctionImagePaths;
+        std::vector<ImageWrap>          appSpecialFunctionImageWraps;
 
     // ReinkanRecordPostProcessing.cpp
 
@@ -739,6 +747,8 @@ namespace Reinkan::Graphics
 
         void CreateVLightResources(size_t width, size_t height);
 
+        void CreateVLightSpecialFunctionTable(size_t width, size_t height);
+
         void RecordVLightPass(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
         void DestroyVLightResources();
@@ -758,6 +768,11 @@ namespace Reinkan::Graphics
         DescriptorWrap                  appVLightDescriptorWrap;
         BufferWrap                      appVLightVertexBufferWrap;
         BufferWrap                      appVLightIndexBufferWrap;
+
+        float                           appVLightRadius{ 20.0f };
+        float                           appVLightDistanceScale{ 0.5f };
+        float                           appMaxFogThickness{ 0.8f };
+        float                           appFogFalloff{ 10.0f };
     
     // ReinkanGlobalLight.cpp
         void CreateGlobalLightRenderPass();
